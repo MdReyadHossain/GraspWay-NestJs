@@ -22,4 +22,5 @@ export class InstructorController
         return this.instructorservice.insertstudent(instructordto);
     }
 
+    
 }
