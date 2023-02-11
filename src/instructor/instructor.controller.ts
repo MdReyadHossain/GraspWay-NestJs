@@ -13,7 +13,7 @@ export class InstructorController
     }
 
     @Get("/findstudent/:id")
-    getStudentByID(@Param("id") id:number,):any{
+    getStudentByID(@Param("id") id:number):any{
         return this.instructorservice.getStudentByID(id);
     }
 
@@ -21,6 +21,4 @@ export class InstructorController
     insertstudent(@Body() instructordto: Instructor): any{
         return this.instructorservice.insertstudent(instructordto);
     }
-
-    
 }
