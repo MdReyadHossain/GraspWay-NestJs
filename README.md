@@ -6,7 +6,7 @@
 
 1. Login
 2. Edit Profile
-3. Update Profile
+3. Delete Profile
 4. Forget Password (throught SMTP)
 5. Reset Password
 6. Feature's Status (Dashboard)
@@ -23,7 +23,7 @@
 
 1. Registration/ Login
 2. Edit Profile
-3. Update Profile
+3. Delete Profile
 4. Forget Password (throught SMTP)
 5. Reset Password
 6. Feature's Status (Dashboard)
@@ -40,7 +40,7 @@
 
 1. Registrastion/ Login
 2. Edit Profile
-3. Update Profile
+3. Delete Profile
 4. Forget Password (throught SMTP)
 5. Reset Password
 6. Feature's Status (Dashboard)
@@ -57,7 +57,7 @@
 
 1. Registration/ Login
 2. Edit Profile
-3. Update Profile
+3. Delete Profile
 4. Forget Password (throught SMTP)
 5. Reset Password
 6. Feature's Status (Dashboard)
