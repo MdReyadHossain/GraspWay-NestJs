@@ -1,6 +1,6 @@
 import { ParseIntPipe, Query, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Body, Controller, Get, Post, Put, Param } from "@nestjs/common/decorators";
-import { AdminProfile } from "./admin.dto";
+import { AdminLogin, AdminProfile } from "./admin.dto";
 import { AdminService } from "./admin.service";
 
 @Controller("/admin")
@@ -9,14 +9,17 @@ export class AdminController {
 
     // login to dashboard
     @Post("/login")
-    loginAdmin(): any {
+    @UsePipes(new ValidationPipe())
+    loginAdmin(
+        @Body() login: AdminLogin
+    ): any {
         return this.adminservice.loginAdmin();
     }
 
     // password sent with body key
-    @Get("/forgetpassword/:pass")
+    @Post("/forgetpassword/")
     @UsePipes(new ValidationPipe())
-    forgetPassword(@Body("pass", ParseIntPipe) password: AdminProfile): number {
+    forgetPassword(@Body("pass", ParseIntPipe) password: AdminProfile): any {
         return this.adminservice.forgetPassword(password);
     }
 
@@ -31,10 +34,13 @@ export class AdminController {
     }
 
     // edit profile with admin parameter
-    @Get("/editProfile/:admin")
-    editProfile(@Param("admin") admin: AdminProfile): any {
+    @Post("/editProfile/")
+    @UsePipes(new ValidationPipe())
+    editProfile(
+        @Body() admin: AdminProfile
+        ): any {
         return this.adminservice.editProfile(admin);
-    } 
+    }
     
     @Post("/resetPassword/")
     resetPassword(@Body("password") pass: AdminProfile): any {

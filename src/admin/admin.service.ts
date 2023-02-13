@@ -11,8 +11,14 @@ export class AdminService {
         return `Admin Dashboard\n\nStudent: ${student},\nInstructor: ${instructor}, \nManager: ${manager}`;
     }
 
-    editProfile(name: AdminProfile): any {
-        return `Update Profile for ${name}`;
+    editProfile(admin: AdminProfile): any {
+        return `Profile Updated:
+                Name: ${admin.name}
+                Email: ${admin.email} 
+                Phone Number: ${admin.phoneNo} 
+                Address: ${admin.address}
+                Establishment: ${admin.establishment}
+                `;
     }
 
     forgetPassword(admin: AdminProfile): any {
