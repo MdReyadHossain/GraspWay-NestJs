@@ -15,8 +15,8 @@ export class AdminService {
         return `Update Profile for ${name}`;
     }
 
-    forgetPassword(pass): any {
-        return "Password Updated " + pass;
+    forgetPassword(admin: AdminProfile): any {
+        return `Your Password is ${admin.password}\nDon't share with anyone!`;
     }
 
     resetPassword(pass): any {

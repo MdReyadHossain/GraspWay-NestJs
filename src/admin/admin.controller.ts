@@ -13,6 +13,13 @@ export class AdminController {
         return this.adminservice.loginAdmin();
     }
 
+    // password sent with body key
+    @Get("/forgetpassword/:pass")
+    @UsePipes(new ValidationPipe())
+    forgetPassword(@Body("pass", ParseIntPipe) password: AdminProfile): number {
+        return this.adminservice.forgetPassword(password);
+    }
+
     // dashboard: showing all status of users
     @Get("/dashboard/")
     getdashboard(
@@ -28,13 +35,6 @@ export class AdminController {
     editProfile(@Param("admin") admin: AdminProfile): any {
         return this.adminservice.editProfile(admin);
     } 
-
-    // password sent with body key
-    @Post("/forgetpassword/")
-    @UsePipes(new ValidationPipe())
-    forgetPassword(@Body("password") password: AdminProfile): number {
-        return this.adminservice.forgetPassword(password);
-    }
     
     @Post("/resetPassword/")
     resetPassword(@Body("password") pass: AdminProfile): any {
