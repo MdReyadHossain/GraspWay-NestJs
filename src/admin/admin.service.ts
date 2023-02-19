@@ -1,8 +1,27 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { AdminProfile } from "./admin.dto";
+import { AdminEntity } from "./admin.entity";
 
 @Injectable()
 export class AdminService {
+    constructor(
+        @InjectRepository(AdminEntity)
+        private adminRepo: Repository<AdminEntity>,
+    ) {}
+    
+    addAdmin(admin: AdminProfile): any {
+        const adminaccount = new AdminEntity();
+        adminaccount.name = admin.name;
+        adminaccount.phoneNo = admin.phoneNo;
+        adminaccount.email = admin.email;
+        adminaccount.address = admin.address;
+        adminaccount.establishment = admin.establishment;
+        adminaccount.password = admin.password;
+        return this.adminRepo.save(adminaccount);
+    }
+
     loginAdmin(): any {
         return "Login successfully";
     }

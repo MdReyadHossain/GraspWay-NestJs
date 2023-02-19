@@ -7,6 +7,12 @@ import { AdminService } from "./admin.service";
 export class AdminController {
     constructor(private adminservice: AdminService){}
 
+    @Post('/addadmin')
+    @UsePipes(new ValidationPipe())
+    addAdmin(@Body() admin: AdminProfile): any {
+        return this.adminservice.addAdmin(admin);
+    }
+
     // login to dashboard
     @Post("/login")
     @UsePipes(new ValidationPipe())
