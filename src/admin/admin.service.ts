@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { AdminProfile } from "./admin.dto";
+import { AdminLogin, AdminProfile } from "./admin.dto";
 import { AdminEntity } from "./admin.entity";
 
 @Injectable()
@@ -22,8 +22,8 @@ export class AdminService {
         return this.adminRepo.save(adminaccount);
     }
 
-    loginAdmin(): any {
-        return "Login successfully";
+    loginAdmin(admin: AdminLogin): any {
+        return "Username or Password invalid!";
     }
 
     getDashboard(student, instructor, manager): any {

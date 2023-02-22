@@ -17,9 +17,9 @@ export class AdminController {
     @Post("/login")
     @UsePipes(new ValidationPipe())
     loginAdmin(
-        @Body() login: AdminLogin
+        @Body() admin: AdminLogin
     ): any {
-        return this.adminservice.loginAdmin();
+        return this.adminservice.loginAdmin(admin);
     }
 
     // password sent with body key
