@@ -5,10 +5,21 @@ import { AppService } from './app.service';
 import { InstructorModule } from './instructor/instructor.module';
 import { AdminModule } from './admin/admin.module';
 import { StudentModule } from './student/student.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 @Module({
-  imports: [InstructorModule, AdminModule, StudentModule],
+  imports: [InstructorModule, AdminModule, StudentModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: 'finix',
+      database: 'GraspWay',
+      autoLoadEntities: true,
+      synchronize: true,
+    })],
   controllers: [AppController],
   providers: [AppService],
 })

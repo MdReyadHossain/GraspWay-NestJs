@@ -1,28 +1,36 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { Course, Instructor } from "./instructor.dto";
+import { InstructorEntity } from "./instructor.entity";
 
 @Injectable()
 export class InstructorService{
+
+    constructor(
+        @InjectRepository(InstructorEntity)
+        private instructorRepo: Repository<InstructorEntity>
+    ) {}
 
     getDashboard(): string{
         return "Dashboard for Instructor.";
     }
 
-    registration(instructordto:Instructor): any{
-        return `Registration Successfull.
-                ID is: ${instructordto.id}
-                Instructor Name: ${instructordto.instructorname}
-                User Name: ${instructordto.name}
-                Email Address: ${instructordto.email}
-                Phone Number: ${instructordto.phonenumber}
-                Password: ${instructordto.password}
-                Age: ${instructordto.age}
-                Date of Birth: ${instructordto.dob}
-                Course: ${instructordto.course}`;
+    registration(instructor: Instructor): any{
+        const instructoraccount = new InstructorEntity();
+        instructoraccount.instructorname = instructor.instructorname;
+        instructoraccount.password = instructor.password;
+        instructoraccount.phonenumber = instructor.phonenumber;
+        instructoraccount.email = instructor.email;
+        instructoraccount.age = instructor.age;
+        instructoraccount.dob = instructor.dob;
+        instructoraccount.course = instructor.course;
+        
+        return this.instructorRepo.save(instructoraccount)
     }
 
     insertStudent(instructordto:Instructor):any{
-        return "Student Inserted Name: " + instructordto.name + " and ID is: " + instructordto.id;
+        //return "Student Inserted Name: " + instructordto.name + " and ID is: " + instructordto.id;
     }
 
     getStudentByQuery(qur): any{

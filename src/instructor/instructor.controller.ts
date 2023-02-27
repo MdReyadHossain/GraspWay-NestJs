@@ -44,4 +44,7 @@ export class InstructorController
     insertCourse(@Body() instructordto: Course): any{
         return this.instructorservice.insertCourse(instructordto);
     }
+
+    
+
 }

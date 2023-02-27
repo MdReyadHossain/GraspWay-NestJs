@@ -3,10 +3,10 @@ import { IsNotEmpty, IsInt, isNotEmpty, Length, MinLength, MaxLength, IsAlpha, I
 
 export class Instructor{
 
-    @IsNotEmpty({message: "Enter Your ID."})
-    @IsInt({message: "ID Must be Integer."})
-    @Min(1, {message: "ID Must be Greater Than 1."})
-    id: number;
+    // @IsNotEmpty({message: "Enter Your ID."})
+    // @IsInt({message: "ID Must be Integer."})
+    // @Min(1, {message: "ID Must be Greater Than 1."})
+    // id: number;
 
     @IsNotEmpty({message: "Instructor Name Can't be Empty."})
     @MinLength(5, {message: "Instructor Name Must be Greater Than 5 Character."})
@@ -26,7 +26,7 @@ export class Instructor{
     @IsNotEmpty({message: "Enter Your Phone Number."})
     @Length(11, 11, {message: "Phone Number Length Must be 11."})
     @IsPhoneNumber("BD", {message: "Phone Number Invalid."})
-    phonenumber: number;
+    phonenumber: string;
 
     @IsNotEmpty({message: "Enter Your Password."})
     @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
