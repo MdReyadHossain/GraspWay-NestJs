@@ -12,8 +12,8 @@ export class InstructorService{
         private instructorRepo: Repository<InstructorEntity>
     ) {}
 
-    getDashboard(): string{
-        return "Dashboard for Instructor.";
+    getDashboard(): any{
+        return this.instructorRepo.find();
     }
 
     registration(instructor: Instructor): any{
@@ -49,5 +49,13 @@ export class InstructorService{
 
     insertCourse(instructordto:Course):any{
         return instructordto.course + " Course Inserted. Where ID is " + instructordto.id +".";
+    }
+
+    updateInstructorByID(instructordto: Instructor, id: number): any {
+        return this.instructorRepo.update(id, instructordto);
+    }
+
+    deleteInstructorByID(id): any{
+        return this.instructorRepo.delete(id);
     }
 }

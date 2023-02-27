@@ -14,10 +14,10 @@ export class Instructor{
     @IsAlpha()
     instructorname: string;
 
-    @IsNotEmpty({message: "Enter Your Name."})
-    @Length(3,10, {message: "Name Length Should be 3 to 10 Character."})
-    @IsString({message: "Name Should be String."})
-    name: string;
+    // @IsNotEmpty({message: "Enter Your Name."})
+    // @Length(3,10, {message: "Name Length Should be 3 to 10 Character."})
+    // @IsString({message: "Name Should be String."})
+    // name: string;
 
     @IsNotEmpty({message: "Enter Your Email."})
     @IsEmail()

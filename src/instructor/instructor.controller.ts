@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Course, Instructor } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 
@@ -45,6 +45,14 @@ export class InstructorController
         return this.instructorservice.insertCourse(instructordto);
     }
 
-    
+    @Put("/updateinstructor/:id")
+    updateInstructorByID(@Body() instructordto:Instructor, @Param('id', ParseIntPipe) id: number): any {
+        return this.instructorservice.updateInstructorByID(instructordto, id);
+    }
+
+    @Delete("/deleteinstructor/:id")
+    deleteInstructorByID(@Param("id", ParseIntPipe) id: number): any{
+        return this.instructorservice.deleteInstructorByID(id);
+    }
 
 }
