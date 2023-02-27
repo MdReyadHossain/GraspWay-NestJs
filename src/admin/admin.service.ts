@@ -26,25 +26,30 @@ export class AdminService {
         return "Username or Password invalid!";
     }
 
-    getDashboard(student, instructor, manager): any {
-        return `Admin Dashboard\n\nStudent: ${student},\nInstructor: ${instructor}, \nManager: ${manager}`;
-    }
-
-    editProfile(admin: AdminProfile): any {
-        return `Profile Updated:
-                Name: ${admin.name}
-                Email: ${admin.email} 
-                Phone Number: ${admin.phoneNo} 
-                Address: ${admin.address}
-                Establishment: ${admin.establishment}
-                `;
-    }
-
     forgetPassword(admin: AdminProfile): any {
         return `Your Password is ${admin.password}\nDon't share with anyone!`;
     }
 
-    resetPassword(pass): any {
+    getDashboard(student, instructor, manager): any {
+        return `Admin Dashboard\n\nStudent: ${student},\nInstructor: ${instructor}, \nManager: ${manager}`;
+    }
+
+    editProfile(id: number, admin: AdminProfile): any {
+        return this.adminRepo.update(id, admin);
+    }
+
+    resetPassword(id: number, admin: AdminProfile): any {
+        this.adminRepo.update(id, {password: admin.password} );
         return "Password reseted!";
+    }
+
+    getAdminbyid(id): any {
+        console.log(`Admin Found!`)
+        return this.adminRepo.findOneBy({ id });
+    }
+
+    deleteAdminbyID(id: any): any {
+        this.adminRepo.delete(id);
+        return "Admin deleted!";
     }
 }

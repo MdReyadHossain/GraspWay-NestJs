@@ -1,5 +1,5 @@
 import { ParseIntPipe, Query, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Body, Controller, Get, Post, Put, Param } from "@nestjs/common/decorators";
+import { Body, Controller, Get, Post, Put, Param, Patch, Delete } from "@nestjs/common/decorators";
 import { AdminLogin, AdminProfile } from "./admin.dto";
 import { AdminService } from "./admin.service";
 
@@ -25,8 +25,11 @@ export class AdminController {
     // password sent with body key
     @Post("/forgetpassword/")
     @UsePipes(new ValidationPipe())
-    forgetPassword(@Body("pass", ParseIntPipe) password: AdminProfile): any {
-        return this.adminservice.forgetPassword(password);
+    forgetPassword(
+        @Body("id", ParseIntPipe) id: number,
+        @Body() password: AdminProfile
+        ): any {
+        return this.adminservice.forgetPassword(id, password);
     }
 
     // dashboard: showing all status of users
@@ -40,16 +43,30 @@ export class AdminController {
     }
 
     // edit profile with admin parameter
-    @Post("/editProfile/")
+    @Put("/editProfile/")
     @UsePipes(new ValidationPipe())
     editProfile(
+        @Body('id', ParseIntPipe) id: number, 
         @Body() admin: AdminProfile
         ): any {
-        return this.adminservice.editProfile(admin);
+        return this.adminservice.editProfile(id, admin);
     }
     
-    @Post("/resetPassword/")
-    resetPassword(@Body("password") pass: AdminProfile): any {
-        return this.adminservice.resetPassword(pass);
+    @Patch("/resetPassword/")
+    resetPassword(
+        @Body('id', ParseIntPipe) id: number, 
+        @Body() admin: AdminProfile
+        ): any {
+        return this.adminservice.resetPassword(id, admin);
+    }
+
+    @Get("/searchAdmin/:id")
+    getAdminbyid(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.getAdminbyid(id);
+    }
+
+    @Delete("deleteAdmin/:id")
+    deleteAdminbyID(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteAdminbyID(id);
     }
 }
