@@ -58,4 +58,8 @@ export class InstructorService{
     deleteInstructorByID(id): any{
         return this.instructorRepo.delete(id);
     }
+
+    editEmailByID(instructordto: Instructor, id: number): any{
+        return this.instructorRepo.update(id, {email: instructordto.email});
+    }
 }
