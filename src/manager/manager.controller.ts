@@ -5,6 +5,7 @@ import { ManagerService } from "./manager.service";
 export class ManagerController{
   constructor(private managerservice: ManagerService){}
 
+   // manager dashboard 
   @Get("/dashboard")
   getDashboard(): any{
     return this.managerservice.getDashboard();
