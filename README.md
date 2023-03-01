@@ -61,5 +61,8 @@
 4. Forget Password (throught SMTP)
 5. Reset Password
 6. Feature's Status (Dashboard)
-7. ... <br>
-pending...
+7. Course Catalog 
+8. Course Content
+9. Grading n Feedback 
+10. Course certification
+11. Transaction management
