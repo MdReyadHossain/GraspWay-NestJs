@@ -19,7 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'zstnnmsu',
       autoLoadEntities: true,
       synchronize: true,
-    }),
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
