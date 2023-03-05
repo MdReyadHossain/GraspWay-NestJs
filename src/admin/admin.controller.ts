@@ -30,8 +30,8 @@ export class AdminController {
     }
 
     @Post("/varifypass")
-    varifyPass(@Body() pin: any): any {
-        return this.adminservice.varifyPass(pin);
+    varifyPass(@Body() admin: any): any {
+        return this.adminservice.varifyPass(admin);
     }
 
     // dashboard: showing all status of users
