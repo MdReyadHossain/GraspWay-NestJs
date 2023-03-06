@@ -22,19 +22,24 @@ export class AdminController {
         return this.adminservice.loginAdmin(admin);
     }
 
-    // password sent with body key
+    // pin sent to email with smtp service
     @Post("/forgetpassword/")
     @UsePipes(new ValidationPipe())
     forgetPassword(@Body() acc: any): any {
         return this.adminservice.forgetPassword(acc);
     }
 
+    // varify the varification pin and reset password (forgetpassword)
     @Post("/varifypass")
     varifyPass(@Body() admin: any): any {
         return this.adminservice.varifyPass(admin);
     }
 
-    // dashboard: showing all status of users
+
+// ------------------- Admin Profile Routes [Start] ---------------------//
+
+
+    // dashboard: show status of all users
     @Get("/dashboard/")
     getdashboard(): any {
         return this.adminservice.getDashboard();
@@ -67,4 +72,9 @@ export class AdminController {
     deleteAdminbyID(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteAdminbyID(id);
     }
+
+
+// ------------------- Admin Profile Route [Start] ---------------------//
+
+
 }
