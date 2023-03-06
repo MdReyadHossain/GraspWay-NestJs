@@ -74,7 +74,7 @@ export class AdminController {
     }
 
 
-// ------------------- Admin Profile Route [Start] ---------------------//
+// ------------------- Admin Profile Route [End] ---------------------//
 
 
 }
