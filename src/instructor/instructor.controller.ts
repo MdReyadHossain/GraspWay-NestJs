@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Course, Instructor } from "./instructor.dto";
+import { Course, InstructorLogin, InstructorReg } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 
 @Controller("/instructor")
@@ -7,11 +7,22 @@ export class InstructorController
 {
     constructor(private instructorservice: InstructorService){}
 
+    //---------- Instructor----------//
+
+    //-----Instructor Registration-----//
     @Post("/registration")
     @UsePipes(new ValidationPipe())
-    registration(@Body() instructordto: Instructor):any{
+    registration(@Body() instructordto: InstructorReg):any{
         return this.instructorservice.registration(instructordto);
     }
+
+    //-----Instructor Login-----//
+    @Post("/login")
+    @UsePipes(new ValidationPipe())
+    login(@Body() instructordto: InstructorLogin): any{
+        return this.instructorservice.login(instructordto);
+    }
+
 
     @Get("/dashboard")
     getInstructor(): any{
@@ -20,7 +31,7 @@ export class InstructorController
 
     @Post("/insertstudent")
     @UsePipes(new ValidationPipe())
-    insertStudent(@Body() instructordto: Instructor): any{
+    insertStudent(@Body() instructordto: InstructorReg): any{
         return this.instructorservice.insertStudent(instructordto);
     }
 
@@ -36,7 +47,7 @@ export class InstructorController
 
     @Patch("/editinstructor/:id")
     //@UsePipes(new ValidationPipe())
-    editEmailByID(@Body() instructordto: Instructor, @Param('id', ParseIntPipe) id: number): any{
+    editEmailByID(@Body() instructordto: InstructorReg, @Param('id', ParseIntPipe) id: number): any{
         return this.instructorservice.editEmailByID(instructordto, id);
     }
 
@@ -47,7 +58,7 @@ export class InstructorController
     }
 
     @Put("/updateinstructor/:id")
-    updateInstructorByID(@Body() instructordto:Instructor, @Param('id', ParseIntPipe) id: number): any {
+    updateInstructorByID(@Body() instructordto:InstructorReg, @Param('id', ParseIntPipe) id: number): any {
         return this.instructorservice.updateInstructorByID(instructordto, id);
     }
 

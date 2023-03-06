@@ -1,23 +1,13 @@
 import { IsNotEmpty, IsInt, isNotEmpty, Length, MinLength, MaxLength, IsAlpha, IsString, IsEmail, IsPhoneNumber, Min, IsDate, Matches } from "class-validator";
 
 
-export class Instructor{
-
-    // @IsNotEmpty({message: "Enter Your ID."})
-    // @IsInt({message: "ID Must be Integer."})
-    // @Min(1, {message: "ID Must be Greater Than 1."})
-    // id: number;
+export class InstructorReg{
 
     @IsNotEmpty({message: "Instructor Name Can't be Empty."})
     @MinLength(5, {message: "Instructor Name Must be Greater Than 5 Character."})
     @MaxLength(50, {message: "Instructor Name Must be Less Than 50 Character."})
     @IsAlpha()
     instructorname: string;
-
-    // @IsNotEmpty({message: "Enter Your Name."})
-    // @Length(3,10, {message: "Name Length Should be 3 to 10 Character."})
-    // @IsString({message: "Name Should be String."})
-    // name: string;
 
     @IsNotEmpty({message: "Enter Your Email."})
     @IsEmail()
@@ -44,6 +34,19 @@ export class Instructor{
     @MinLength(3, {message: "Course Name Length Must be Greater Than 3 Character."})
     course: string; 
 
+}
+
+export class InstructorLogin{
+
+    @IsNotEmpty({message: "Instructor Name Can't be Empty."})
+    @MinLength(5, {message: "Instructor Name Must be Greater Than 5 Character."})
+    @MaxLength(50, {message: "Instructor Name Must be Less Than 50 Character."})
+    @IsAlpha()
+    instructorname: string;
+
+    @IsNotEmpty({message: "Enter Your Password."})
+    @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
+    password: string;
 }
 
 export class Course{
