@@ -11,23 +11,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [InstructorModule, AdminModule, StudentModule,
     TypeOrmModule.forRoot({
-      // type: 'postgres',
-      // host: 'satao.db.elephantsql.com',
-      // port: 5432,
-      // username: 'zstnnmsu',
-      // password: 'U_OP-727SHwzfCwxVnwQBvspwkwvQj8w',
-      // database: 'zstnnmsu',
-      // autoLoadEntities: true,
-      // synchronize: true,
-      //---
       type: 'postgres',
-      host: 'localhost',
+      host: 'satao.db.elephantsql.com',
       port: 5432,
-      username: 'postgres',
-      password: '4430',
-      database: 'Graspway',
+      username: 'zstnnmsu',
+      password: 'U_OP-727SHwzfCwxVnwQBvspwkwvQj8w',
+      database: 'zstnnmsu',
       autoLoadEntities: true,
       synchronize: true,
+
+      //-----------x------------\\
+      
+      // type: 'postgres',
+      // host: 'localhost',
+      // port: 5432,
+      // username: 'postgres',
+      // password: '4430',
+      // database: 'Graspway',
+      // autoLoadEntities: true,
+      // synchronize: true,
     })
   ],
   controllers: [AppController],

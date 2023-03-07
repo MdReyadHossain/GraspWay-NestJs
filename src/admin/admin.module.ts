@@ -14,8 +14,8 @@ import { AdminService } from "./admin.service";
                         ignoreTLS: true,
                         secure: true,
                         auth: {
-                            user: 'email',
-                            pass: 'generated password'
+                            user: 'blazeaxelspy@gmail.com',
+                            pass: 'tjnadpxurnrlqzff'
                         },
                     }
                 }),

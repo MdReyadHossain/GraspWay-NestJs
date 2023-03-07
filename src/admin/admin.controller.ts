@@ -30,14 +30,14 @@ export class AdminController {
     }
 
     // varify the varification pin and reset password (forgetpassword)
-    @Post("/varifypass")
+    @Patch("/varifypass")
     varifyPass(@Body() admin: any): any {
         return this.adminservice.varifyPass(admin);
     }
 
 
-// ------------------- Admin Profile Routes [Start] ---------------------//
 
+// ------------------- Admin Related Routes [Start] ---------------------//
 
     // dashboard: show status of all users
     @Get("/dashboard/")
@@ -65,16 +65,55 @@ export class AdminController {
 
     @Get("/searchAdmin/:id")
     getAdminbyid(@Param('id', ParseIntPipe) id: any): any {
-        return this.adminservice.getAdminbyid(id);
+        return this.adminservice.getAdminByid(id);
     }
 
-    @Delete("deleteAdmin/:id")
+    @Delete("/deleteAdmin/:id")
     deleteAdminbyID(@Param('id', ParseIntPipe) id: any): any {
-        return this.adminservice.deleteAdminbyID(id);
+        return this.adminservice.deleteAdminByID(id);
     }
 
+// ------------------- Admin Related Routes [End] ---------------------//
 
-// ------------------- Admin Profile Route [End] ---------------------//
 
 
+// ------------------- Manager Related Routes [Start] ---------------------//
+
+    @Post("/addManager/")
+    addManagerbyAdmin(@Body() manag: any): any {
+        return this.adminservice.addManagerByAdmin(manag);
+    }
+
+    @Get("/searchManager/:id")
+    searchManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.searchManagerByAdmin(id);
+    }
+
+    @Put("/editManagerProfile/")
+    editManagerProfileByAdmin(
+        @Body('id', ParseIntPipe) id: number, 
+        @Body() manag: any
+        ): any {
+        return this.adminservice.editManagerProfileByAdmin(id, manag);
+    }
+
+    @Patch("/resetManagerPassword/")
+    resetmanagerPassByAdmin(
+        @Body('id', ParseIntPipe) id: number, 
+        @Body() manag: any
+        ): any {
+        return this.adminservice.resetManagerPassByAdmin(id, manag);
+    }
+    
+    @Get("/managerPermission/")
+    managerPermissionByAdmin(@Body() manag: any): any {
+        return this.adminservice.managerPermissionByAdmin(manag);
+    }
+
+    @Delete("/deleteManager/:id")
+    deleteManagerbyID(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteManagerByID(id);
+    }
+
+// ------------------- Manager Related Routes [End] ---------------------//
 }

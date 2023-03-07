@@ -91,6 +91,8 @@ export class AdminService {
             isValid = true;
 
         if(isValid) {
+            const salt = await bcrypt.genSalt();
+            admin.password = await bcrypt.hash(admin.password, salt);
             this.adminRepo.update(this.id, {password: admin.password} );
             this.pin = null;
             return "Password reseted!";
@@ -100,9 +102,18 @@ export class AdminService {
             return "Invalid or expired pin.";
     }
 
+// ------------------- Admin Related Routes [Start] ---------------------//    
 
-    getDashboard(): any {
-        return `Admin Dashboard\n\nStudent: ,\nInstructor: , \nManager: `;
+    async getDashboard(): Promise<any> {
+        const admin = await this.adminRepo.count({});
+        const manager = null;
+        const instructor = null;
+        const student = null;
+        return `Admin Dashboard:\n
+                Admin: ${admin}
+                Manager: ${manager}
+                Instructor: ${instructor}
+                Student: ${student}`;
     }
 
 
@@ -111,20 +122,54 @@ export class AdminService {
     }
 
 
-    resetPassword(id: number, admin: AdminProfile): any {
+    async resetPassword(id: number, admin: AdminProfile) {
+        const salt = await bcrypt.genSalt();
+        admin.password = await bcrypt.hash(admin.password, salt);
+
         this.adminRepo.update(id, {password: admin.password} );
         return "Password reseted!";
     }
 
 
-    getAdminbyid(id): any {
+    getAdminByid(id): any {
         console.log(`Admin Found!`)
         return this.adminRepo.findOneBy({ id });
     }
 
     
-    deleteAdminbyID(id: any): any {
+    deleteAdminByID(id: any): any {
         this.adminRepo.delete(id);
         return "Admin deleted!";
     }
+
+// ------------------- Admin Related Routes [End] ---------------------//
+
+
+// ------------------- Manager Related Routes [Start] ---------------------//
+
+    addManagerByAdmin(manag: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+    searchManagerByAdmin(manag: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+    editManagerProfileByAdmin(id: number, manag: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+    resetManagerPassByAdmin(id: number, manag: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+    managerPermissionByAdmin(manag: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+    deleteManagerByID(id: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+// ------------------- Manager Related Routes [End] ---------------------//
 }
