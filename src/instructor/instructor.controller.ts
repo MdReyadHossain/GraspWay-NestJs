@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Course, InstructorLogin, InstructorReg } from "./instructor.dto";
+import { Course, ForgetPin, InstructorLogin, InstructorReg } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 
 @Controller("/instructor")
@@ -23,10 +23,22 @@ export class InstructorController
         return this.instructorservice.login(instructordto);
     }
 
+    @Post("/forgetpin/")
+    forgetpin(@Body() instructordto: ForgetPin): any{
+        return this.instructorservice.forgetpin(instructordto);
+    }
 
+    //-----Instructor Dashboard-----//
     @Get("/dashboard")
     getInstructor(): any{
         return this.instructorservice.getDashboard();
+    }
+
+    //-----Instructor Edit Profile-----//
+    @Patch("/editinstructor/:id")
+    @UsePipes(new ValidationPipe())
+    editEmailByID(@Body() instructordto: InstructorReg, @Param('id', ParseIntPipe) id: number): any{
+        return this.instructorservice.editEmailByID(instructordto, id);
     }
 
     @Post("/insertstudent")
@@ -45,11 +57,7 @@ export class InstructorController
         return this.instructorservice.getStudentByID(id);
     }
 
-    @Patch("/editinstructor/:id")
-    //@UsePipes(new ValidationPipe())
-    editEmailByID(@Body() instructordto: InstructorReg, @Param('id', ParseIntPipe) id: number): any{
-        return this.instructorservice.editEmailByID(instructordto, id);
-    }
+    
 
     @Post("/insertcourse")
     @UsePipes(new ValidationPipe())

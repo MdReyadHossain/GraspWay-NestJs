@@ -2,16 +2,24 @@ import * as bcrypt from "bcrypt";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Course, InstructorLogin, InstructorReg } from "./instructor.dto";
+import { Course, ForgetPin, InstructorLogin, InstructorReg } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
+import { Subject } from "rxjs";
+import { MailerService } from "@nestjs-modules/mailer/dist";
 
 @Injectable()
 export class InstructorService{
+    //mailerService: MailerService;
 
     constructor(
         @InjectRepository(InstructorEntity)
-        private instructorRepo: Repository<InstructorEntity>
+        private instructorRepo: Repository<InstructorEntity>,
+        private readonly mailerService: MailerService
     ) {}
+
+    private id: number;
+    private pin: number;
+    private name: any;
 
     //----------Instructor----------//
 
@@ -56,7 +64,7 @@ export class InstructorService{
         }
 
         else{
-            if(!name){
+            if(name == null){
                 return instructor.instructorname + " Instructor Not Found!"
             }
             if(!isValidPass){
@@ -65,6 +73,34 @@ export class InstructorService{
         }
     }
 
+    //-----Instructor Forget Pin-----//
+    async forgetpin(instructor: ForgetPin){
+        let user = await this.instructorRepo.findOneBy({email: instructor.email});
+
+        if(user){
+            this.id = user.id;
+            this.name = user.instructorname;
+            this.pin = Math.floor(Math.random() * 100000);
+
+            await this.mailerService.sendMail({
+                to: instructor.email,
+                subject: `Forget Password Confirmation from GraspWay`,
+                text: `Dear ["${this.name}"],
+                Your verification PIN is: [G- ${this.pin}]             
+                Please enter this PIN to complete your account setup.                
+                Thank you,
+                [GraspWay]`,
+            });
+
+            return "Varification Code Sent to this " + instructor.email + " Email!"
+        }
+
+        else{
+            return instructor.email + " Email Not Found!"
+        }
+    }
+
+    //-----Instructor Dashboard-----//
     getDashboard(): any{
         return this.instructorRepo.find();
     }
