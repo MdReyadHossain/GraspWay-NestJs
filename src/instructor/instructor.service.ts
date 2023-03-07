@@ -2,7 +2,7 @@ import * as bcrypt from "bcrypt";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Course, ForgetPin, InstructorLogin, InstructorReg } from "./instructor.dto";
+import { Course, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
 import { Subject } from "rxjs";
 import { MailerService } from "@nestjs-modules/mailer/dist";
@@ -97,6 +97,26 @@ export class InstructorService{
 
         else{
             return instructor.email + " Email Not Found!"
+        }
+    }
+
+    //-----Instructor Verify Pin-----//
+    async verifypin(instructor: VerifyPin){
+        let isValid = false;
+        if(instructor.pin == this.pin){
+            isValid = true;
+        }
+
+        if(isValid){
+            const passhash = await bcrypt.genSalt();
+            instructor.password = await bcrypt.hash(instructor.password, passhash);
+            this.instructorRepo.update(this.id, {password: instructor.password});
+            this.pin = null;
+            return "Password Successfully Changed!"
+        }
+
+        else{
+            return "Invalid Pin Entered!"
         }
     }
 

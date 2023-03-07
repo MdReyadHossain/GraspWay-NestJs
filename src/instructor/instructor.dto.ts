@@ -58,6 +58,17 @@ export class ForgetPin{
     
 }
 
+export class VerifyPin{
+
+    @IsNotEmpty({message: "Enter Your Password."})
+    @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
+    password: string;
+    
+    @IsNotEmpty({message: "Enter Your Password."})
+    pin: number;
+
+}
+
 export class InstructorEdit{
 
     @IsNotEmpty({message: "Instructor Name Can't be Empty."})

@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Course, ForgetPin, InstructorLogin, InstructorReg } from "./instructor.dto";
+import { Verify } from "crypto";
+import { Course, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 
 @Controller("/instructor")
@@ -7,7 +8,7 @@ export class InstructorController
 {
     constructor(private instructorservice: InstructorService){}
 
-    //---------- Instructor----------//
+    //--------------------General Part Start--------------------//
 
     //-----Instructor Registration-----//
     @Post("/registration")
@@ -23,10 +24,21 @@ export class InstructorController
         return this.instructorservice.login(instructordto);
     }
 
+    //-----Instructor Forget Pin-----//
     @Post("/forgetpin/")
     forgetpin(@Body() instructordto: ForgetPin): any{
         return this.instructorservice.forgetpin(instructordto);
     }
+
+    //-----Instructor Verify Pin-----//
+    @Post("/verifypin")
+    verifypin(@Body() instructordto: VerifyPin): any{
+        return this.instructorservice.verifypin(instructordto);
+    }
+
+    //--------------------General Part End--------------------//
+
+    //--------------------Instructor Access Part Start--------------------//
 
     //-----Instructor Dashboard-----//
     @Get("/dashboard")
