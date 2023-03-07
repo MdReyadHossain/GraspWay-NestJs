@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Verify } from "crypto";
-import { Course, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
+import { Course, EditInfo, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 
 @Controller("/instructor")
@@ -13,7 +13,7 @@ export class InstructorController
     //-----Instructor Registration-----//
     @Post("/registration")
     @UsePipes(new ValidationPipe())
-    registration(@Body() instructordto: InstructorReg):any{
+    registration(@Body() instructordto: InstructorReg): any{
         return this.instructorservice.registration(instructordto);
     }
 
@@ -47,10 +47,10 @@ export class InstructorController
     }
 
     //-----Instructor Edit Profile-----//
-    @Patch("/editinstructor/:id")
+    @Patch("/editinstructorinfo/:id")
     @UsePipes(new ValidationPipe())
-    editEmailByID(@Body() instructordto: InstructorReg, @Param('id', ParseIntPipe) id: number): any{
-        return this.instructorservice.editEmailByID(instructordto, id);
+    editInfoByID(@Body() instructordto: EditInfo, @Param('id', ParseIntPipe) id: number): any{
+        return this.instructorservice.editInfoByID(instructordto, id);
     }
 
     @Post("/insertstudent")

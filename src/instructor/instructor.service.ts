@@ -2,13 +2,14 @@ import * as bcrypt from "bcrypt";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Course, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
+import { Course, EditInfo, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
 import { Subject } from "rxjs";
 import { MailerService } from "@nestjs-modules/mailer/dist";
 
 @Injectable()
 export class InstructorService{
+    adminRepo: any;
     //mailerService: MailerService;
 
     constructor(
@@ -121,8 +122,26 @@ export class InstructorService{
     }
 
     //-----Instructor Dashboard-----//
-    getDashboard(): any{
-        return this.instructorRepo.find();
+    async getDashboard(): Promise<any>{
+        const instructorcount = await this.instructorRepo.count({});
+        return `Welcome To GraspWay\n\nInstructor Dashboard:
+        Instructor: [${instructorcount}]`;
+    }
+
+    //-----Instructor Edit Partial Information-----//
+    async editInfoByID(instructordto: EditInfo, id: number): Promise<any>{
+        const { email, phonenumber } = instructordto;
+
+        const updateResult = await this.instructorRepo.update({ id }, { email, phonenumber },);
+        
+        if(updateResult.affected > 0){
+            return `Instructor Information Updated:
+            Email: [${instructordto.email}]
+            PhoneNumber: [${instructordto.phonenumber}]`;
+        }
+        else{
+            return `Instructor Information Didn't Updated.`
+        }
     }
 
     insertStudent(instructordto: InstructorReg):any{
@@ -155,7 +174,5 @@ export class InstructorService{
         return this.instructorRepo.delete(id);
     }
 
-    editEmailByID(instructordto: InstructorReg, id: number): any{
-        return this.instructorRepo.update(id, {email: instructordto.email});
-    }
+    
 }

@@ -6,7 +6,7 @@ import { InstructorEntity } from "./instructor.entity";
 import { InstructorService } from "./instructor.service";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([InstructorEntity]),
+    imports: [TypeOrmModule.forFeature([InstructorEntity,]), 
                 MailerModule.forRoot({
                     transport: {
                         host: 'smtp.gmail.com',

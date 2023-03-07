@@ -69,6 +69,19 @@ export class VerifyPin{
 
 }
 
+export class EditInfo{
+
+    @IsNotEmpty({message: "Enter Your Email."})
+    @IsEmail()
+    email: string;
+
+    @IsNotEmpty({message: "Enter Your Phone Number."})
+    @Length(11, 11, {message: "Phone Number Length Must be 11."})
+    @IsPhoneNumber("BD", {message: "Phone Number Invalid."})
+    phonenumber: string;
+    
+}
+
 export class InstructorEdit{
 
     @IsNotEmpty({message: "Instructor Name Can't be Empty."})
