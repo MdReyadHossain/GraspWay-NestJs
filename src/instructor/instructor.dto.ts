@@ -43,6 +43,7 @@ export class Instructor{
     @IsNotEmpty({message: "Enter Your Course Name."})
     @MinLength(3, {message: "Course Name Length Must be Greater Than 3 Character."})
     course: string; 
+    id: string;
 
 }
 

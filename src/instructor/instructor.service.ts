@@ -30,7 +30,7 @@ export class InstructorService{
     }
 
     insertStudent(instructordto:Instructor):any{
-        //return "Student Inserted Name: " + instructordto.name + " and ID is: " + instructordto.id;
+        return "Student Inserted Name: " + instructordto.instructorname + " and ID is: " + instructordto.id;
     }
 
     getStudentByQuery(qur): any{
@@ -52,7 +52,7 @@ export class InstructorService{
     }
 
     updateInstructorByID(instructordto: Instructor, id: number): any {
-        return this.instructorRepo.update(id, instructordto);
+        //return this.instructorRepo.update(instructordto, id);
     }
 
     deleteInstructorByID(id): any{

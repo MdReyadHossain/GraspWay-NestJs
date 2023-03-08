@@ -47,7 +47,7 @@ export class InstructorController
     }
 
     @Put("/updateinstructor/:id")
-    updateInstructorByID(@Body() instructordto:Instructor, @Param('id', ParseIntPipe) id: number): any {
+    updateInstructorByID(@Body() instructordto: Instructor, @Param('id', ParseIntPipe) id: number): any {
         return this.instructorservice.updateInstructorByID(instructordto, id);
     }
 
