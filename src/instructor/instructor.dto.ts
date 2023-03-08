@@ -107,14 +107,18 @@ export class InstructorEdit{
     @Min(18, {message: "Instructor Must be Older Than 18."})
     age: number;
 
-    @IsNotEmpty({message: "Enter Your Date of Birth."})
-    @Matches(/^\d{4}-\d{2}-\d{2}$/i, {message: "Date of Birth is Invalid."})
-    dob: Date;
-
     @IsNotEmpty({message: "Enter Your Course Name."})
     @MinLength(3, {message: "Course Name Length Must be Greater Than 3 Character."})
     course: string; 
 
+}
+
+export class ResetPassword{
+
+    @IsNotEmpty({message: "Enter Your Password."})
+    @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
+    password: string;
+    
 }
 
 export class Course{

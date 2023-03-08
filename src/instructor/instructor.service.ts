@@ -2,7 +2,7 @@ import * as bcrypt from "bcrypt";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Course, EditInfo, ForgetPin, InstructorLogin, InstructorReg, VerifyPin } from "./instructor.dto";
+import { Course, EditInfo, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
 import { Subject } from "rxjs";
 import { MailerService } from "@nestjs-modules/mailer/dist";
@@ -10,7 +10,6 @@ import { MailerService } from "@nestjs-modules/mailer/dist";
 @Injectable()
 export class InstructorService{
     adminRepo: any;
-    //mailerService: MailerService;
 
     constructor(
         @InjectRepository(InstructorEntity)
@@ -132,7 +131,7 @@ export class InstructorService{
     async editInfoByID(instructordto: EditInfo, id: number): Promise<any>{
         const { email, phonenumber } = instructordto;
 
-        const updateResult = await this.instructorRepo.update({ id }, { email, phonenumber },);
+        const updateResult = await this.instructorRepo.update({ id }, { email, phonenumber });
         
         if(updateResult.affected > 0){
             return `Instructor Information Updated:
@@ -144,6 +143,54 @@ export class InstructorService{
         }
     }
 
+    //-----Instructor Profile Update-----//
+    async updateInstructorByID(instructordto: InstructorEdit, id: number): Promise<any> {
+        let isVliad = false;
+        if(isVliad == false){
+            const passhash = await bcrypt.genSalt();
+            instructordto.password = await bcrypt.hash(instructordto.password, passhash);
+            isVliad = true;
+
+            if(isVliad == true){
+                this.instructorRepo.update(id, instructordto);
+                return `Instructor Information Updated:
+                [${this.instructorRepo.findOneBy({id})}]`;
+            }
+        }
+        
+        else{
+            return `Instructor Information Didn't Updated.`;
+        }
+        
+    }
+
+    //-----Instructor Password Reset-----//
+    async resetPasswordByID(instructordto: ResetPassword, id: number): Promise<any>{
+        let isVliad = false;
+
+        if(isVliad == false){
+            const passhash = await bcrypt.genSalt();
+            instructordto.password = await bcrypt.hash(instructordto.password, passhash);
+            isVliad = true;
+
+            if(isVliad == true){
+                this.instructorRepo.update(id, {password: instructordto.password});
+                return `Instructor Password Successflly Changed!`;
+            }
+        }
+        
+        else{
+            return `Instructor Password Didn't Changed.`;
+        }
+    }
+
+    //-----Instructor Search-----//
+    async searchInstructorByID(id): Promise<any>{
+        const data = this.instructorRepo.findOneBy({id});
+        return data;
+    }
+
+    //-----Insert Sudent-----//
     insertStudent(instructordto: InstructorReg):any{
         //return "Student Inserted Name: " + instructordto.name + " and ID is: " + instructordto.id;
     }
@@ -166,9 +213,7 @@ export class InstructorService{
         return instructordto.course + " Course Inserted. Where ID is " + instructordto.id +".";
     }
 
-    updateInstructorByID(instructordto: InstructorReg, id: number): any {
-        return this.instructorRepo.update(id, instructordto);
-    }
+    
 
     deleteInstructorByID(id): any{
         return this.instructorRepo.delete(id);
