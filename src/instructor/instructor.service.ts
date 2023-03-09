@@ -31,7 +31,6 @@ export class InstructorService{
         instructoraccount.email = instructor.email;
         instructoraccount.age = instructor.age;
         instructoraccount.dob = instructor.dob;
-        instructoraccount.course = instructor.course;
 
         const passhash = await bcrypt.genSalt();
         instructoraccount.password = await bcrypt.hash(instructor.password, passhash);
