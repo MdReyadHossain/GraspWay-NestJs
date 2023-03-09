@@ -9,4 +9,13 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get("/home")
+  getHome(): string {
+    return this.appService.getHome();
+  }
+  @Get("/Contact")
+  getContact(): string {
+    return this.appService.getContact();
+  }
 }

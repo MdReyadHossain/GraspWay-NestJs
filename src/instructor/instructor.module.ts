@@ -1,8 +1,27 @@
+import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CourseEntity } from "src/Entities/Course/course.entity";
 import { InstructorController } from "./instructor.controller";
+import { InstructorEntity } from "./instructor.entity";
 import { InstructorService } from "./instructor.service";
 
 @Module({
+    imports: [TypeOrmModule.forFeature([InstructorEntity, CourseEntity]), 
+                MailerModule.forRoot({
+                    transport: {
+                        host: 'smtp.gmail.com',
+                        port: 465,
+                        ignoreTLS: true,
+                        secure: true,
+                        auth: {
+                            user: 'banikparthib401@gmail.com',
+                            pass: 'glxlvgeuxdbabzat'
+                        },
+                    }
+                }),
+            ],
+
     controllers: [InstructorController],
     providers: [InstructorService],
 })

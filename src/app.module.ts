@@ -6,10 +6,13 @@ import { InstructorModule } from './instructor/instructor.module';
 import { AdminModule } from './admin/admin.module';
 import { StudentModule } from './student/student.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CourseModule } from './Entities/Course/course.module';
+import { CatagroyModule } from './Entities/Catagory/catagory.module';
+import { ManagerModule } from './manager/manager.module';
 
 
 @Module({
-  imports: [InstructorModule, AdminModule, StudentModule,
+  imports: [InstructorModule, AdminModule, StudentModule, ManagerModule, CourseModule, CatagroyModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'satao.db.elephantsql.com',

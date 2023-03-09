@@ -15,8 +15,8 @@ export class AdminService {
         @InjectRepository(AdminEntity) private adminRepo: Repository<AdminEntity>,
         private readonly mailerService: MailerService
     ) {}
-    
-    
+
+
     async addAdmin(admin: AdminProfile) {
         const adminaccount = new AdminEntity();
         adminaccount.name = admin.name;
@@ -44,19 +44,24 @@ export class AdminService {
         const user = await this.adminRepo.findOneBy({
             name: admin.name
         });
-        if(admin.password == user.password)
-            return "Login Successful!";
-        
-        else {
-            const isValid = await bcrypt.compare(admin.password, user.password);
 
-            if(isValid) 
-                return "Login Successful!";
+        if(user) {
+            if(admin.password == user.password)
+                return 1;
             
-            else if(!isValid)
-                return "Username or Password invalid!";
+            else {
+                const isValid = await bcrypt.compare(admin.password, user.password);
+
+                if(isValid) 
+                    return 1;
+                
+                else if(!isValid)
+                    return 0;
+            }
         }
-        
+
+        else
+            return 0;
     }
 
 
@@ -172,4 +177,14 @@ export class AdminService {
     }
 
 // ------------------- Manager Related Routes [End] ---------------------//
+
+
+// ------------------- Instructor Related Routes [Start] ---------------------//
+
+    addInstructorbyAdmin(manag: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+// ------------------- Instructor Related Routes [End] ---------------------//
+
 }

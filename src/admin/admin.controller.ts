@@ -1,7 +1,9 @@
 import { ParseIntPipe, Query, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Body, Controller, Get, Post, Put, Param, Patch, Delete } from "@nestjs/common/decorators";
+import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards } from "@nestjs/common/decorators";
+import { SessionGuard } from "./session.guard";
 import { AdminLogin, AdminProfile } from "./admin.dto";
 import { AdminService } from "./admin.service";
+import { UnauthorizedException } from '@nestjs/common/exceptions';
 
 @Controller("/admin")
 export class AdminController {
@@ -16,10 +18,22 @@ export class AdminController {
     // login to dashboard
     @Post("/login")
     @UsePipes(new ValidationPipe())
-    loginAdmin(
+    async loginAdmin(
+        @Session() session,
         @Body() admin: AdminLogin
-    ): any {
-        return this.adminservice.loginAdmin(admin);
+    ) {
+        // return this.adminservice.loginAdmin(admin);
+        if(await this.adminservice.loginAdmin(admin)) {
+            session.name = admin.name;
+            session.phoneNo = admin.phoneNo;
+            session.email = admin.email;
+            session.address = admin.address;
+            session.establishment = admin.establishment;
+            return {message: "Login Succesful!"};
+        }
+        else {
+            return {message: "Username or Password Invalid!"};
+        }
     }
 
     // pin sent to email with smtp service
@@ -41,12 +55,14 @@ export class AdminController {
 
     // dashboard: show status of all users
     @Get("/dashboard/")
+    @UseGuards(SessionGuard)
     getdashboard(): any {
         return this.adminservice.getDashboard();
     }
 
     // edit profile with admin parameter
     @Put("/editProfile/")
+    @UseGuards(SessionGuard)
     @UsePipes(new ValidationPipe())
     editProfile(
         @Body('id', ParseIntPipe) id: number, 
@@ -73,6 +89,16 @@ export class AdminController {
         return this.adminservice.deleteAdminByID(id);
     }
 
+    @Get('/logout')
+    @UseGuards(SessionGuard)
+    logout(@Session() session) {
+        if(session.destroy())
+            return {message: "Logged out successful"};
+        
+        else
+            throw new UnauthorizedException("invalid actions");
+    }
+
 // ------------------- Admin Related Routes [End] ---------------------//
 
 
@@ -89,22 +115,6 @@ export class AdminController {
         return this.adminservice.searchManagerByAdmin(id);
     }
 
-    @Put("/editManagerProfile/")
-    editManagerProfileByAdmin(
-        @Body('id', ParseIntPipe) id: number, 
-        @Body() manag: any
-        ): any {
-        return this.adminservice.editManagerProfileByAdmin(id, manag);
-    }
-
-    @Patch("/resetManagerPassword/")
-    resetmanagerPassByAdmin(
-        @Body('id', ParseIntPipe) id: number, 
-        @Body() manag: any
-        ): any {
-        return this.adminservice.resetManagerPassByAdmin(id, manag);
-    }
-    
     @Get("/managerPermission/")
     managerPermissionByAdmin(@Body() manag: any): any {
         return this.adminservice.managerPermissionByAdmin(manag);
@@ -116,4 +126,18 @@ export class AdminController {
     }
 
 // ------------------- Manager Related Routes [End] ---------------------//
+
+
+
+// ------------------- Instructor Related Routes [Start] ---------------------//
+
+@Post("/addInstructor/")
+    addInstructorbyAdmin(@Body() manag: any): any {
+        return this.adminservice.addInstructorbyAdmin(manag);
+    }
+
+// ------------------- Instructor Related Routes [End] ---------------------//
+
+
+
 }

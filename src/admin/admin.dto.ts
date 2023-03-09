@@ -11,6 +11,14 @@ export class AdminLogin{
     @IsString({ message: "Password should not be character!" })
     @MinLength(6, { message: "Password should be minimum in 6 character!" })
     password: string;
+
+    address: string;
+
+    phoneNo: string;
+
+    email: string;
+    
+    establishment: number;
 }
 
 

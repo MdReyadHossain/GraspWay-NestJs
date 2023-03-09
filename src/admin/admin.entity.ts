@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ManagerEntity } from "src/manager/manager.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("Admins")
 export class AdminEntity {
@@ -22,4 +23,7 @@ export class AdminEntity {
 
     @Column()
     establishment: number;
+
+    @OneToMany(() => ManagerEntity, (manager) => manager.admin)
+    manager: ManagerEntity[];
 }
