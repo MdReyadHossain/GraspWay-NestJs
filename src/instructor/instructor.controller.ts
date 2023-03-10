@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, Session, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Verify } from "crypto";
+import session from "express-session";
 import { Course, EditInfo, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
+import { SessionGuard } from "./session.guard";
 
 @Controller("/instructor")
 export class InstructorController
@@ -20,8 +22,21 @@ export class InstructorController
     //-----Instructor Login-----//
     @Post("/login")
     @UsePipes(new ValidationPipe())
-    login(@Body() instructordto: InstructorLogin): any{
-        return this.instructorservice.login(instructordto);
+    async login(@Body() instructordto: InstructorLogin, @Session() session){
+        if(await this.instructorservice.login(instructordto)){
+            session.instructorname = instructordto.instructorname;
+            session.password = instructordto.password;
+            session.email = instructordto.email;
+            session.phonenumber = instructordto.phonenumber;
+            session.age = instructordto.age;
+            session.dob = instructordto.dob;
+
+            return session.instructorname + " Login Successfull!";
+        }
+
+        else{
+            return `Invalid Instructor Name or Password.`;
+        }
     }
 
     //-----Instructor Forget Pin-----//
@@ -42,6 +57,7 @@ export class InstructorController
 
     //-----Instructor Dashboard-----//
     @Get("/dashboard")
+    @UseGuards(SessionGuard)
     getInstructor(): any{
         return this.instructorservice.getDashboard();
     }
@@ -97,6 +113,17 @@ export class InstructorController
     @Delete("/deleteinstructor/:id")
     deleteInstructorByID(@Param("id", ParseIntPipe) id: number): any{
         return this.instructorservice.deleteInstructorByID(id);
+    }
+
+    //-----Instructor Logout-----//
+    @Get('/logout')
+    @UseGuards(SessionGuard)
+    logout(@Session() session) {
+        if(session.destroy())
+            return {message: "Logged out successful"};
+        
+        else
+            throw new UnauthorizedException("invalid actions");
     }
 
     //--------------------Instructor Access Part End--------------------//

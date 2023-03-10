@@ -56,19 +56,20 @@ export class InstructorService{
     //-----Instructor Login-----//
     async login(instructor: InstructorLogin){
         const name = await this.instructorRepo.findOneBy({ instructorname: instructor.instructorname });
-        const isValidPass = await bcrypt.compare(instructor.password, name.password) 
         
-        if(isValidPass){
-            return instructor.instructorname + " Login Successful!!"
+        if(name){
+            const isValidPass = await bcrypt.compare(instructor.password, name.password);
+            if(isValidPass){
+                return 1;
+            }
+            
+            else{
+                return 0;
+            }            
         }
 
         else{
-            if(name == null){
-                return instructor.instructorname + " Instructor Not Found!"
-            }
-            if(!isValidPass){
-                return "Incorrect Password!"
-            }
+            return 0;            
         }
     }
 
@@ -152,8 +153,7 @@ export class InstructorService{
 
             if(isVliad == true){
                 this.instructorRepo.update(id, instructordto);
-                return `Instructor Information Updated:
-                [${this.instructorRepo.findOneBy({id})}]`;
+                return this.instructorRepo.findOneBy({id: id});
             }
         }
         

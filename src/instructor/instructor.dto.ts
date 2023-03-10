@@ -43,6 +43,14 @@ export class InstructorLogin{
     @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
     password: string;
 
+    phonenumber: string;
+
+    email: string;
+
+    age: number;
+
+    dob: Date;
+
 }
 
 export class ForgetPin{

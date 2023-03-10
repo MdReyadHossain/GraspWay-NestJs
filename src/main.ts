@@ -7,9 +7,12 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: 'my-secret',
-      resave: false,
+      secret: 'graspway',
+      resave: true,
       saveUninitialized: false,
+      cookie: {
+        maxAge: 30000
+      }
     }),
   );
   
