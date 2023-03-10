@@ -22,7 +22,7 @@ export class ManagerEntity {
     age: number;
 
     @Column()
-    dob: Date;
+    status: boolean;
 
     @ManyToOne(() => AdminEntity, (admin) => admin.manager)
     admin: AdminEntity;

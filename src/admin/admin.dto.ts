@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEmail, MinLength, MaxLength, IsAlpha, IsAlphanumeric, IsInt, Length, IsString, IsPhoneNumber, Matches, Min, Max } from 'class-validator';
+import { IsNotEmpty, IsEmail, MinLength, MaxLength, IsAlpha, IsAlphanumeric, IsInt, Length, IsString, IsPhoneNumber, Matches, Min, Max, IsIn } from 'class-validator';
 
 
 export class AdminLogin{
@@ -51,6 +51,16 @@ export class AdminProfile {
     joiningYear: string;
 
     adminImage: string;
+}
+
+
+export class AdminVarifyPass{
+    @IsNotEmpty()
+    @IsInt()
+    pin: number;
+
+    @IsNotEmpty()
+    password: string
 }
 
 

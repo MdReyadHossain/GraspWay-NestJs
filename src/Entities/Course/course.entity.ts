@@ -23,4 +23,7 @@ export class CourseEntity {
 
     @OneToMany(() => CourseContentEntity, (content) => content.course)
     content: CourseContentEntity[];
+
+    @Column()
+    status: boolean;
 }

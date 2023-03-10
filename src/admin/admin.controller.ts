@@ -1,17 +1,18 @@
 import { FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards } from "@nestjs/common/decorators";
 import { SessionGuard } from "./session.guard";
-import { AdminLogin, AdminProfile } from "./admin.dto";
+import { AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminService } from "./admin.service";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
+import { Student } from "src/student/student.dto";
 
 @Controller("/admin")
 export class AdminController {
     constructor(private adminservice: AdminService){}
 
-    @Post('/addadmin')
+    @Post('/addAdmin')
     @UsePipes(new ValidationPipe())
     @UseInterceptors(FileInterceptor('adminImage', {
         storage: diskStorage({
@@ -58,15 +59,15 @@ export class AdminController {
     }
 
     // pin sent to email with smtp service
-    @Post("/forgetpassword/")
+    @Post("/forgetPassword/")
     @UsePipes(new ValidationPipe())
     forgetPassword(@Body() acc: any): any {
         return this.adminservice.forgetPassword(acc);
     }
 
     // varify the varification pin and reset password (forgetpassword)
-    @Patch("/varifypass")
-    varifyPass(@Body() admin: any): any {
+    @Patch("/varifyPass")
+    varifyPass(@Body() admin: AdminVarifyPass): any {
         return this.adminservice.varifyPass(admin);
     }
 
@@ -88,7 +89,7 @@ export class AdminController {
     @UseInterceptors(FileInterceptor('adminImage', {
         storage: diskStorage({
             destination: './files',
-            filename: function (req, file, cb) {
+            filename: function (_req, file, cb) {
                 cb(null,Date.now() + "_" +file.originalname)
             }
         })
@@ -145,25 +146,31 @@ export class AdminController {
 
 // ------------------- Manager Related Routes [Start] ---------------------//
 
-    @Post("/addManager/")
+    @Get("/manager/")
     @UseGuards(SessionGuard)
-    addManagerbyAdmin(@Body() manag: any): any {
-        return this.adminservice.addManagerByAdmin(manag);
+    getmanagers(): any {
+        return this.adminservice.getmanagers();
     }
 
-    @Get("/searchManager/:id")
+    @Patch("/manager/approveManager/:id")
+    @UseGuards(SessionGuard)
+    approveManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.approveManagerByAdmin(id);
+    }
+
+    @Delete("/manager/rejecteManager/:id")
+    @UseGuards(SessionGuard)
+    rejecteManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.rejecteManagerByAdmin(id);
+    }
+
+    @Get("/manager/searchManager/:id")
     @UseGuards(SessionGuard)
     searchManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.searchManagerByAdmin(id);
     }
 
-    @Get("/managerPermission/")
-    @UseGuards(SessionGuard)
-    managerPermissionByAdmin(@Body() manag: any): any {
-        return this.adminservice.managerPermissionByAdmin(manag);
-    }
-
-    @Delete("/deleteManager/:id")
+    @Delete("/manager/deleteManager/:id")
     @UseGuards(SessionGuard)
     deleteManagerbyID(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteManagerByID(id);
@@ -175,14 +182,113 @@ export class AdminController {
 
 // ------------------- Instructor Related Routes [Start] ---------------------//
 
-    @Post("/addInstructor/")
+    @Get("/instructor/")
     @UseGuards(SessionGuard)
-    addInstructorbyAdmin(@Body() manag: any): any {
-        return this.adminservice.addInstructorbyAdmin(manag);
+    getinstructors(): any {
+        return this.adminservice.getinstructors();
+    }
+
+    @Patch("/instructor/approveInstructor/:id")
+    @UseGuards(SessionGuard)
+    addInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.addInstructorbyAdmin(id);
+    }
+
+    @Delete("/instructor/rejectInstructor/:id")
+    @UseGuards(SessionGuard)
+    rejectInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.rejectInstructorbyAdmin(id);
+    }
+
+    @Get("/instructor/searchInstructor/:id")
+    @UseGuards(SessionGuard)
+    searchInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.searchInstructorbyAdmin(id);
+    }
+
+    @Delete("/instructor/deleteInstructor/:id")
+    @UseGuards(SessionGuard)
+    deleteInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteInstructorbyAdmin(id);
+    }
+
+    @Get("/searchCourse/:id")
+    @UseGuards(SessionGuard)
+    searchCoursebyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.searchCoursebyAdmin(id);
+    }
+
+    @Patch("/courseStatus/")
+    @UseGuards(SessionGuard)
+    courseStatus(
+        @Body('id', ParseIntPipe) id: number, 
+        @Body() course: any
+        ): any {
+        return this.adminservice.courseStatus(id, course);
+    }
+
+    @Delete("/deleteCourse/:id")
+    @UseGuards(SessionGuard)
+    deleteCourseByAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteCourseByAdmin(id);
     }
 
 // ------------------- Instructor Related Routes [End] ---------------------//
 
 
 
+// ------------------- Student Related Routes [Start] ---------------------//
+
+    @Get("/student/")
+    @UseGuards(SessionGuard)
+    getStudent(): any {
+        return this.adminservice.getStudent();
+    }
+
+    @Get("/student/searchStudent/:id")
+    @UseGuards(SessionGuard)
+    searchStudentbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.searchStudentbyAdmin(id);
+    }
+
+    @Patch("/student/studentStatus/")
+    @UseGuards(SessionGuard)
+    setStudentStatus(
+        @Body('id', ParseIntPipe) id: number, 
+        @Body() student: any
+        ): any {
+        return this.adminservice.setStudentStatus(id, student);
+    }
+
+    @Delete("/student/deleteStudent/:id")
+    @UseGuards(SessionGuard)
+    deleteStudentbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteStudentbyAdmin(id);
+    }
+
+// ------------------- Student Related Routes [End] ---------------------//
+
+
+
+// ------------------- Website Related Routes [Start] ---------------------//
+
+    @Post('/addCatagory')
+    @UsePipes(new ValidationPipe())
+    addCatagory(
+        @Body() cat: any
+        ): any {
+        return this.adminservice.addCatagory(cat);
+    }
+
+    @Put("/customizeCatagory/")
+    @UseGuards(SessionGuard)
+    @UsePipes(new ValidationPipe())
+    customizeCatagory(
+        @Body('id', ParseIntPipe) id: number, 
+        @Body() cat: any
+        ): any {
+        return this.adminservice.customizeCatagory(id, cat);
+    }
+
+// ------------------- Website Related Routes [End] ---------------------//
 }

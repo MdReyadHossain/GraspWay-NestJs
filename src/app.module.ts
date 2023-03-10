@@ -9,6 +9,7 @@ import { CourseModule } from './Entities/Course/course.module';
 import { CatagroyModule } from './Entities/Catagory/catagory.module';
 import { ManagerModule } from './manager/manager.module';
 import { CourseStudentModule } from './Entities/CourseStudent/coursestudent.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 
 @Module({
@@ -33,7 +34,19 @@ import { CourseStudentModule } from './Entities/CourseStudent/coursestudent.modu
       database: 'postgres',
       autoLoadEntities: true,
       synchronize: true,
-    })
+    }),
+    MailerModule.forRoot({
+        transport: {
+            host: 'smtp.gmail.com',
+            port: 465,
+            ignoreTLS: true,
+            secure: true,
+            auth: {
+                user: 'blazeaxelspy@gmail.com',
+                pass: 'tjnadpxurnrlqzff'
+            },
+        }
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

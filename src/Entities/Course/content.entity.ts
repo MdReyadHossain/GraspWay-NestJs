@@ -11,4 +11,7 @@ export class CourseContentEntity {
 
     @ManyToOne(() => CourseEntity, (course) => course.content)
     course: CourseEntity;
+
+    @Column()
+    status: boolean;
 }
