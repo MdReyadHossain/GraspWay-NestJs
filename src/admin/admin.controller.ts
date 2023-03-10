@@ -1,9 +1,11 @@
-import { ParseIntPipe, Query, UsePipes, ValidationPipe } from "@nestjs/common";
+import { FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards } from "@nestjs/common/decorators";
 import { SessionGuard } from "./session.guard";
 import { AdminLogin, AdminProfile } from "./admin.dto";
 import { AdminService } from "./admin.service";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
 
 @Controller("/admin")
 export class AdminController {
@@ -11,7 +13,26 @@ export class AdminController {
 
     @Post('/addadmin')
     @UsePipes(new ValidationPipe())
-    addAdmin(@Body() admin: AdminProfile): any {
+    @UseInterceptors(FileInterceptor('adminImage', {
+        storage: diskStorage({
+            destination: './files',
+            filename: function (req, file, cb) {
+                cb(null,Date.now() + "_" +file.originalname)
+            }
+        })
+    }))
+    addAdmin(
+        @UploadedFile(new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({ maxSize: 2097152 }),
+                    new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
+                ]
+            }
+        )) adminImage: Express.Multer.File,
+        @Body() admin: AdminProfile
+        ): any {
+        console.log(adminImage);
+        admin.adminImage = adminImage.filename;
         return this.adminservice.addAdmin(admin);
     }
 
@@ -28,7 +49,7 @@ export class AdminController {
             session.phoneNo = admin.phoneNo;
             session.email = admin.email;
             session.address = admin.address;
-            session.establishment = admin.establishment;
+            session.joiningYear = admin.joiningYear;
             return {message: "Login Succesful!"};
         }
         else {
@@ -64,14 +85,31 @@ export class AdminController {
     @Put("/editProfile/")
     @UseGuards(SessionGuard)
     @UsePipes(new ValidationPipe())
+    @UseInterceptors(FileInterceptor('adminImage', {
+        storage: diskStorage({
+            destination: './files',
+            filename: function (req, file, cb) {
+                cb(null,Date.now() + "_" +file.originalname)
+            }
+        })
+    }))
     editProfile(
+        @UploadedFile(new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({ maxSize: 2097152 }),
+                    new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
+                ]
+            }
+        )) adminImage: Express.Multer.File,
         @Body('id', ParseIntPipe) id: number, 
         @Body() admin: AdminProfile
         ): any {
+        admin.adminImage = adminImage.filename;
         return this.adminservice.editProfile(id, admin);
     }
     
     @Patch("/resetPassword/")
+    @UseGuards(SessionGuard)
     resetPassword(
         @Body('id', ParseIntPipe) id: number, 
         @Body() admin: AdminProfile
@@ -80,11 +118,13 @@ export class AdminController {
     }
 
     @Get("/searchAdmin/:id")
+    @UseGuards(SessionGuard)
     getAdminbyid(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.getAdminByid(id);
     }
 
     @Delete("/deleteAdmin/:id")
+    @UseGuards(SessionGuard)
     deleteAdminbyID(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteAdminByID(id);
     }
@@ -106,21 +146,25 @@ export class AdminController {
 // ------------------- Manager Related Routes [Start] ---------------------//
 
     @Post("/addManager/")
+    @UseGuards(SessionGuard)
     addManagerbyAdmin(@Body() manag: any): any {
         return this.adminservice.addManagerByAdmin(manag);
     }
 
     @Get("/searchManager/:id")
+    @UseGuards(SessionGuard)
     searchManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.searchManagerByAdmin(id);
     }
 
     @Get("/managerPermission/")
+    @UseGuards(SessionGuard)
     managerPermissionByAdmin(@Body() manag: any): any {
         return this.adminservice.managerPermissionByAdmin(manag);
     }
 
     @Delete("/deleteManager/:id")
+    @UseGuards(SessionGuard)
     deleteManagerbyID(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteManagerByID(id);
     }
@@ -131,7 +175,8 @@ export class AdminController {
 
 // ------------------- Instructor Related Routes [Start] ---------------------//
 
-@Post("/addInstructor/")
+    @Post("/addInstructor/")
+    @UseGuards(SessionGuard)
     addInstructorbyAdmin(@Body() manag: any): any {
         return this.adminservice.addInstructorbyAdmin(manag);
     }

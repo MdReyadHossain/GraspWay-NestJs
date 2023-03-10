@@ -22,7 +22,10 @@ export class AdminEntity {
     email: string;
 
     @Column()
-    establishment: number;
+    joiningYear: string;
+
+    @Column()
+    adminImage: string;
 
     @OneToMany(() => ManagerEntity, (manager) => manager.admin)
     manager: ManagerEntity[];

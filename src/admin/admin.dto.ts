@@ -18,7 +18,9 @@ export class AdminLogin{
 
     email: string;
     
-    establishment: number;
+    joiningYear: number;
+
+    filename: string;
 }
 
 
@@ -45,11 +47,10 @@ export class AdminProfile {
     @IsEmail()
     email: string;
 
-    @IsNotEmpty({ message: "Email should not be empty!" })
-    @IsInt({ message: "Email should not be empty!" })
-    @Min(1900)
-    @Max(2300)
-    establishment: number;
+    @IsNotEmpty({ message: "Joining Year should not be empty!" })
+    joiningYear: string;
+
+    adminImage: string;
 }
 
 

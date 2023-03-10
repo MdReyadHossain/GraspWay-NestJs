@@ -23,8 +23,9 @@ export class AdminService {
         adminaccount.phoneNo = admin.phoneNo;
         adminaccount.email = admin.email;
         adminaccount.address = admin.address;
-        adminaccount.establishment = admin.establishment;
-
+        adminaccount.joiningYear = admin.joiningYear;
+        adminaccount.adminImage = admin.adminImage;
+        
         const salt = await bcrypt.genSalt();
         adminaccount.password = await bcrypt.hash(admin.password, salt);
 
