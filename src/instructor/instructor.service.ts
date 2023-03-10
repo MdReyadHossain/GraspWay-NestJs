@@ -2,18 +2,21 @@ import * as bcrypt from "bcrypt";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Course, EditInfo, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
+import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
 import { Subject } from "rxjs";
 import { MailerService } from "@nestjs-modules/mailer/dist";
+import { CourseContentEntity } from "src/Entities/Course/content.entity";
+import { CourseEntity } from "src/Entities/Course/course.entity";
 
 @Injectable()
 export class InstructorService{
     adminRepo: any;
 
     constructor(
-        @InjectRepository(InstructorEntity)
-        private instructorRepo: Repository<InstructorEntity>,
+        @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
+        @InjectRepository(CourseContentEntity) private contentRepo: Repository<CourseContentEntity>,
+        @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,
         private readonly mailerService: MailerService
     ) {}
 
@@ -192,6 +195,19 @@ export class InstructorService{
     //-----Insert Sudent-----//
     insertStudent(instructordto: InstructorReg):any{
         //return "Student Inserted Name: " + instructordto.name + " and ID is: " + instructordto.id;
+    }
+
+    //-----Instructor File Upload-----//
+    async FileUpload(fileuploaddto: FileUpload) {
+        const filename = new CourseContentEntity();
+        filename.name = fileuploaddto.filename;
+        const course = await this.courseRepo.findOne({ id: fileuploaddto.id });
+        if (!course) {
+            throw new Error(`Could not find course with id ${fileuploaddto.id}`);
+        }
+        filename.course = course;
+        
+        return await this.contentRepo.save(filename);
     }
 
     getStudentByQuery(qur): any{

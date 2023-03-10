@@ -8,4 +8,4 @@ import { CatagoryEntity } from "./catagory.entity";
     imports: [TypeOrmModule.forFeature([CatagoryEntity, CourseEntity])],
 })
 
-export class CatagroyModule {}
+export class CatagoryModule {}

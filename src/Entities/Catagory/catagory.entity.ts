@@ -11,5 +11,5 @@ export class CatagoryEntity {
     Catagoryname: string;
 
     @OneToMany(() => CourseEntity, (course) => course.catagory)
-    course: CourseEntity;
+    course: CourseEntity[];
 }

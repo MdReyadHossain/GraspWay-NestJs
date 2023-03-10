@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, Session, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Session, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { Verify } from "crypto";
 import session from "express-session";
-import { Course, EditInfo, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
+import { diskStorage } from "multer";
+import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 import { SessionGuard } from "./session.guard";
 
@@ -64,6 +66,7 @@ export class InstructorController
 
     //-----Instructor Edit Profile-----//
     @Patch("/editinstructorinfo/:id")
+    @UseGuards(SessionGuard)
     @UsePipes(new ValidationPipe())
     editInfoByID(@Body() instructordto: EditInfo, @Param('id', ParseIntPipe) id: number): any{
         return this.instructorservice.editInfoByID(instructordto, id);
@@ -71,6 +74,7 @@ export class InstructorController
 
     //-----Instructor Profile Update-----//
     @Put("/updateinstructorinfo/:id")
+    @UseGuards(SessionGuard)
     @UsePipes(new ValidationPipe())
     updateInstructorByID(@Body() instructordto: InstructorEdit, @Param('id', ParseIntPipe) id: number): any {
         return this.instructorservice.updateInstructorByID(instructordto, id);
@@ -78,6 +82,7 @@ export class InstructorController
 
     //-----Instructor Password Reset-----//
     @Patch("/resetpassword/:id")
+    @UseGuards(SessionGuard)
     @UsePipes(new ValidationPipe())
     resetPasswordByID(@Body() instructordto: ResetPassword, @Param('id', ParseIntPipe) id: number): any {
         return this.instructorservice.resetPasswordByID(instructordto, id);
@@ -85,6 +90,7 @@ export class InstructorController
 
     //-----Instructor Search-----//
     @Get("/searchinstructor/:id")
+    @UseGuards(SessionGuard)
     searchInstructorByID(@Param('id', ParseIntPipe) id: number): any{
         return this.instructorservice.searchInstructorByID(id);
     }
@@ -111,6 +117,7 @@ export class InstructorController
 
     //-----Delete Instructor-----//
     @Delete("/deleteinstructor/:id")
+    @UseGuards(SessionGuard)
     deleteInstructorByID(@Param("id", ParseIntPipe) id: number): any{
         return this.instructorservice.deleteInstructorByID(id);
     }
@@ -138,6 +145,28 @@ export class InstructorController
     }
 
     //-----Modify Course Content-----//
+    @Post('/uploadfile')
+    @UseInterceptors(FileInterceptor('myfile', {
+        storage: diskStorage({
+            destination: './Uploaded File',
+            filename: function(req, file, cb){
+                cb(null, Date.now()+ "_" + file.originalname)
+            }
+        })
+    }))
+    FileUpload(@Body() fileuploaddto: FileUpload, @UploadedFile(new ParseFilePipe({
+        validators: [
+            new MaxFileSizeValidator({ maxSize: 1000000}),
+            new FileTypeValidator({fileType: 'png|jpg|jpeg|'}),
+        ],
+    }),) myfile: Express.Multer.File){
+        fileuploaddto.filename = myfile.filename;
+        return this.instructorservice.FileUpload(fileuploaddto);
+    }
+    
+
+
+
 
 
     //-----Delete Course Content-----//
