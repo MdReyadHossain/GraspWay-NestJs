@@ -121,15 +121,16 @@ export class ResetPassword{
 }
 
 export class Course{
-    
-    @IsNotEmpty({message: "Enter Your ID."})
-    @IsInt({message: "ID Must be Integer."})
-    @Min(1, {message: "ID Must be Greater Than 1."})
-    id: number;
 
     @IsNotEmpty({message: "Enter Your Course Name."})
     @MinLength(3, {message: "Course Name Length Must be Greater Than 3 Character."})
-    course: string;    
+    coursename: string;  
+    
+    catagoryID: number;
+
+    instructorID: any;
+
+    status: boolean;
 
 }
 
@@ -137,6 +138,6 @@ export class FileUpload{
 
     filename: string;
 
-    id: number;
+    id: any;
 
 }

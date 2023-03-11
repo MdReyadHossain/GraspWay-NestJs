@@ -24,6 +24,9 @@ export class InstructorEntity {
     @Column()
     dob: Date;
 
+    // @Column()
+    // status: boolean;
+
     @OneToMany(() => CourseEntity, (course) => course.instructor)
-    course: CourseEntity;
+    course: CourseEntity[];
 }

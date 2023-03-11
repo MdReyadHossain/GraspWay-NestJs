@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Session, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Res, Session, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Verify } from "crypto";
 import session from "express-session";
 import { diskStorage } from "multer";
+import { Student } from "src/student/student.dto";
 import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
 import { SessionGuard } from "./session.guard";
+import * as fs from 'fs';
 
 @Controller("/instructor")
 export class InstructorController
@@ -88,36 +90,50 @@ export class InstructorController
         return this.instructorservice.resetPasswordByID(instructordto, id);
     }
 
-    //-----Instructor Search-----//
+    //-----Instructor Search By ID-----//
     @Get("/searchinstructor/:id")
-    @UseGuards(SessionGuard)
-    searchInstructorByID(@Param('id', ParseIntPipe) id: number): any{
+    searchInstructorByID(@Param('id', ParseIntPipe) id: any): any{
         return this.instructorservice.searchInstructorByID(id);
     }
 
-    //-----Insert Student-----//
-    @Post("/insertstudent")
-    @UsePipes(new ValidationPipe())
-    insertStudent(@Body() instructordto: InstructorReg): any{
-        return this.instructorservice.insertStudent(instructordto);
+     
+
+    //-----Show All Student-----//
+    @Get("/student/")
+    getStudents(): any{
+        return this.instructorservice.getStudents();
     }
 
-    //-----Confirm Student Request-----//
+    //-----Approve Student Request for Purchese Course-----//
+    @Post("/student/approvestudent/:id")
+    @UsePipes(new ValidationPipe())
+    approveStudentinCourse(@Param('id', ParseIntPipe) id: any): any{
+        return this.instructorservice.approveStudentinCourse(id);
+    }
+
+    //-----Reject Student Request for Purchese Course-----//
+    @Delete("/student/rejectstudent/:id")
+    rejectStudentByInstructor(@Param('id', ParseIntPipe) id: any): any{
+        return this.instructorservice.rejectStudentByInstructor(id);
+    }
     
 
     //-----Find Student By ID-----//
-    @Get("/findstudent/:id")
-    getStudentByID(@Param("id") id:number,):any{
+    @Get("/student/findstudent/:id")
+    getStudentByID(@Param('id', ParseIntPipe) id: any): any{
         return this.instructorservice.getStudentByID(id);
     }
 
-    //-----Find Student By Course Name-----//
+    //-----Find Student By Course ID-----[ERROR]//
+    @Get("/student/findstudentbycourse/:id")
+    getStudentsByCourseID(@Param('id', ParseIntPipe) id: any): any{
+        return this.instructorservice.getStudentsByCourseID(id);
+    }
 
-    //-----Delete Student-----//
 
     //-----Delete Instructor-----//
     @Delete("/deleteinstructor/:id")
-    @UseGuards(SessionGuard)
+    //@UseGuards(SessionGuard)
     deleteInstructorByID(@Param("id", ParseIntPipe) id: number): any{
         return this.instructorservice.deleteInstructorByID(id);
     }
@@ -137,7 +153,7 @@ export class InstructorController
 
     //--------------------Course Related Part Start--------------------//
 
-    //-----Add Course Content-----//
+    //-----Add Course-----//
     @Post("/insertcourse")
     @UsePipes(new ValidationPipe())
     insertCourse(@Body() instructordto: Course): any{
@@ -150,7 +166,7 @@ export class InstructorController
         storage: diskStorage({
             destination: './Uploaded File',
             filename: function(req, file, cb){
-                cb(null, Date.now()+ "_" + file.originalname)
+                cb(null, Date.now()+ "_Instructor" + file.originalname)
             }
         })
     }))
@@ -166,14 +182,31 @@ export class InstructorController
     
 
 
-
-
-
     //-----Delete Course Content-----//
+    @Delete("/deletecoursecontent/:id")
+    //@UseGuards(SessionGuard)
+    deletecoursecontent(@Param('id', ParseIntPipe) id: any): any {
+        return this.instructorservice.deletecoursecontent(id);
+    }
 
 
     //-----Certification-----//
+    @Get("/certificate/:id")
+    async getCertificateByID(@Res() res, @Param('id') id: any){
+        try{
+            const filename = await this.instructorservice.getCertificateByID(id);
 
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+            const fileStream = fs.createReadStream(filename);
+            fileStream.pipe(res);
+        }
+        catch(error)
+        {
+            console.error(error);
+            return "PDF Can Not Generated!";
+        }
+    }
 
     //--------------------Course Related Part End--------------------//
 

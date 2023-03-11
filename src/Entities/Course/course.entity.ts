@@ -12,8 +12,11 @@ export class CourseEntity {
     @Column()
     coursename: string;
 
+    @Column()
+    status: boolean;
+
     @ManyToOne(() => InstructorEntity, (instructor) => instructor.course)
-    instructor: CourseEntity;
+    instructor: InstructorEntity;
 
     @ManyToOne(() => CatagoryEntity, (catagory) => catagory.course)
     catagory: CatagoryEntity;
@@ -23,4 +26,5 @@ export class CourseEntity {
 
     @OneToMany(() => CourseContentEntity, (content) => content.course)
     content: CourseContentEntity[];
+    course: InstructorEntity;
 }
