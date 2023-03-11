@@ -1,6 +1,12 @@
 import { IsAlpha, IsEmail, IsInt, IsNotEmpty, IsPhoneNumber, IsString, Length, Matches, MaxLength, Min, MinLength } from "class-validator";
 
-export class Student{
+export class StudentLogin {
+    email: string;
+
+    password: string;
+}
+
+export class Studentinfo{
     
     @IsNotEmpty({message: "Instructor Name Can't be Empty."})
     @MinLength(5, {message: "Instructor Name Must be Greater Than 5 Character."})

@@ -22,6 +22,9 @@ export class StudentEntity{
 
     @Column()
     dob: Date;
+    
+    @Column()
+    status: boolean;
 
 
 }
