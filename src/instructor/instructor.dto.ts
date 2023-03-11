@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsInt, isNotEmpty, Length, MinLength, MaxLength, IsAlpha, IsString, IsEmail, IsPhoneNumber, Min, IsDate, Matches } from "class-validator";
+import { CourseContentEntity } from "src/Entities/Course/content.entity";
 
 
 export class InstructorReg{
@@ -42,6 +43,14 @@ export class InstructorLogin{
     @IsNotEmpty({message: "Enter Your Password."})
     @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
     password: string;
+
+    phonenumber: string;
+
+    email: string;
+
+    age: number;
+
+    dob: Date;
 
 }
 
@@ -112,19 +121,23 @@ export class ResetPassword{
 }
 
 export class Course{
-    
-    @IsNotEmpty({message: "Enter Your ID."})
-    @IsInt({message: "ID Must be Integer."})
-    @Min(1, {message: "ID Must be Greater Than 1."})
-    id: number;
-
-    @IsNotEmpty({message: "Enter Your Name."})
-    @Length(3,10, {message: "Name Length Should be 3 to 10 Character."})
-    @IsString({message: "Name Should be String."})
-    name: string;
 
     @IsNotEmpty({message: "Enter Your Course Name."})
     @MinLength(3, {message: "Course Name Length Must be Greater Than 3 Character."})
-    course: string;
+    coursename: string;  
+    
+    catagoryID: number;
+
+    instructorID: any;
+
+    status: boolean;
+
+}
+
+export class FileUpload{
+
+    filename: string;
+
+    id: any;
 
 }

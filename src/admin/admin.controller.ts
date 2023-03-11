@@ -1,12 +1,11 @@
 import { FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards } from "@nestjs/common/decorators";
-import { SessionGuard } from "./session.guard";
+import { AdminSessionGuard } from "./session.guard";
 import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminService } from "./admin.service";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
-import { Student } from "src/student/student.dto";
 
 @Controller("/admin")
 export class AdminController {
@@ -77,14 +76,14 @@ export class AdminController {
 
     // dashboard: show status of all users
     @Get("/dashboard/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     getdashboard(): any {
         return this.adminservice.getDashboard();
     }
 
     // edit profile with admin parameter
     @Put("/editProfile/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     @UsePipes(new ValidationPipe())
     @UseInterceptors(FileInterceptor('adminImage', {
         storage: diskStorage({
@@ -106,13 +105,12 @@ export class AdminController {
         @Body('id', ParseIntPipe) id: number, 
         @Body() admin: AdminProfile
         ): any {
-        id = session
         admin.adminImage = adminImage.filename;
         return this.adminservice.editProfile(id, admin);
     }
     
     @Patch("/resetPassword/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     resetPassword(
         @Body('id', ParseIntPipe) id: number, 
         @Body() admin: AdminProfile
@@ -121,19 +119,19 @@ export class AdminController {
     }
 
     @Get("/searchAdmin/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     getAdminbyid(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.getAdminByid(id);
     }
 
     @Delete("/deleteAdmin/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     deleteAdminbyID(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteAdminByID(id);
     }
 
     @Get('/logout')
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     logout(@Session() session) {
         if(session.destroy())
             return {message: "Logged out successful"};
@@ -149,31 +147,31 @@ export class AdminController {
 // ------------------- Manager Related Routes [Start] ---------------------//
 
     @Get("/manager/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     getmanagers(): any {
         return this.adminservice.getmanagers();
     }
 
     @Patch("/manager/approveManager/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     approveManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.approveManagerByAdmin(id);
     }
 
-    @Delete("/manager/rejecteManager/:id")
-    @UseGuards(SessionGuard)
-    rejecteManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
-        return this.adminservice.rejecteManagerByAdmin(id);
+    @Delete("/manager/rejectManager/:id")
+    @UseGuards(AdminSessionGuard)
+    rejectManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.rejectManagerByAdmin(id);
     }
 
     @Get("/manager/searchManager/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     searchManagerbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.searchManagerByAdmin(id);
     }
 
     @Delete("/manager/deleteManager/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     deleteManagerbyID(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteManagerByID(id);
     }
@@ -185,49 +183,49 @@ export class AdminController {
 // ------------------- Instructor Related Routes [Start] ---------------------//
 
     @Get("/instructor/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     getinstructors(): any {
         return this.adminservice.getinstructors();
     }
 
     @Patch("/instructor/approveInstructor/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     approveInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.approveInstructorbyAdmin(id);
     }
 
     @Delete("/instructor/rejectInstructor/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     rejectInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.rejectInstructorbyAdmin(id);
     }
 
     @Get("/instructor/searchInstructor/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     searchInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.searchInstructorbyAdmin(id);
     }
 
     @Delete("/instructor/deleteInstructor/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     deleteInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteInstructorbyAdmin(id);
     }
 
     @Get("/searchCourse/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     searchCoursebyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.searchCoursebyAdmin(id);
     }
 
     @Patch("/courseStatus/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     courseStatus(@Body('id', ParseIntPipe) id: number): any {
         return this.adminservice.courseStatus(id);
     }
 
     @Delete("/deleteCourse/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     deleteCourseByAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteCourseByAdmin(id);
     }
@@ -239,19 +237,19 @@ export class AdminController {
 // ------------------- Student Related Routes [Start] ---------------------//
 
     @Get("/student/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     getStudent(): any {
         return this.adminservice.getStudent();
     }
 
     @Get("/student/searchStudent/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     searchStudentbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.searchStudentbyAdmin(id);
     }
 
     @Patch("/student/studentStatus/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     setStudentStatus(
         @Body('id', ParseIntPipe) id: number, 
         @Body() status: boolean
@@ -260,7 +258,7 @@ export class AdminController {
     }
 
     @Delete("/student/deleteStudent/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     deleteStudentbyAdmin(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteStudentbyAdmin(id);
     }
@@ -280,7 +278,7 @@ export class AdminController {
     }
 
     @Put("/customizeCatagory/")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     @UsePipes(new ValidationPipe())
     customizeCatagory(
         @Body('id', ParseIntPipe) id: number, 
@@ -290,7 +288,7 @@ export class AdminController {
     }
 
     @Delete("/deleteCatagory/:id")
-    @UseGuards(SessionGuard)
+    @UseGuards(AdminSessionGuard)
     deleteCatagory(@Param('id', ParseIntPipe) id: any): any {
         return this.adminservice.deleteCatagory(id);
     }

@@ -1,7 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Res, Session, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { Verify } from "crypto";
-import { Course, EditInfo, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
+import session from "express-session";
+import { diskStorage } from "multer";
+import { Studentinfo } from "src/student/student.dto";
+import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorService } from "./instructor.service";
+import { InstructorSessionGuard } from "./session.guard";
+import * as fs from 'fs';
 
 @Controller("/instructor")
 export class InstructorController
@@ -20,8 +26,21 @@ export class InstructorController
     //-----Instructor Login-----//
     @Post("/login")
     @UsePipes(new ValidationPipe())
-    login(@Body() instructordto: InstructorLogin): any{
-        return this.instructorservice.login(instructordto);
+    async login(@Body() instructordto: InstructorLogin, @Session() session){
+        if(await this.instructorservice.login(instructordto)){
+            session.instructorname = instructordto.instructorname;
+            session.password = instructordto.password;
+            session.email = instructordto.email;
+            session.phonenumber = instructordto.phonenumber;
+            session.age = instructordto.age;
+            session.dob = instructordto.dob;
+
+            return session.instructorname + " Login Successfull!";
+        }
+
+        else{
+            return `Invalid Instructor Name or Password.`;
+        }
     }
 
     //-----Instructor Forget Pin-----//
@@ -42,12 +61,14 @@ export class InstructorController
 
     //-----Instructor Dashboard-----//
     @Get("/dashboard")
+    @UseGuards(InstructorSessionGuard)
     getInstructor(): any{
         return this.instructorservice.getDashboard();
     }
 
     //-----Instructor Edit Profile-----//
     @Patch("/editinstructorinfo/:id")
+    @UseGuards(InstructorSessionGuard)
     @UsePipes(new ValidationPipe())
     editInfoByID(@Body() instructordto: EditInfo, @Param('id', ParseIntPipe) id: number): any{
         return this.instructorservice.editInfoByID(instructordto, id);
@@ -55,6 +76,7 @@ export class InstructorController
 
     //-----Instructor Profile Update-----//
     @Put("/updateinstructorinfo/:id")
+    @UseGuards(InstructorSessionGuard)
     @UsePipes(new ValidationPipe())
     updateInstructorByID(@Body() instructordto: InstructorEdit, @Param('id', ParseIntPipe) id: number): any {
         return this.instructorservice.updateInstructorByID(instructordto, id);
@@ -62,62 +84,129 @@ export class InstructorController
 
     //-----Instructor Password Reset-----//
     @Patch("/resetpassword/:id")
+    @UseGuards(InstructorSessionGuard)
     @UsePipes(new ValidationPipe())
     resetPasswordByID(@Body() instructordto: ResetPassword, @Param('id', ParseIntPipe) id: number): any {
         return this.instructorservice.resetPasswordByID(instructordto, id);
     }
 
-    //-----Instructor Search-----//
+    //-----Instructor Search By ID-----//
     @Get("/searchinstructor/:id")
-    searchInstructorByID(@Param('id', ParseIntPipe) id: number): any{
+    searchInstructorByID(@Param('id', ParseIntPipe) id: any): any{
         return this.instructorservice.searchInstructorByID(id);
     }
 
-    //-----Insert Student-----//
-    @Post("/insertstudent")
-    @UsePipes(new ValidationPipe())
-    insertStudent(@Body() instructordto: InstructorReg): any{
-        return this.instructorservice.insertStudent(instructordto);
+     
+
+    //-----Show All Student-----//
+    @Get("/student/")
+    getStudents(): any{
+        return this.instructorservice.getStudents();
     }
 
-    //-----Confirm Student Request-----//
+    //-----Approve Student Request for Purchese Course-----//
+    @Post("/student/approvestudent/:id")
+    @UsePipes(new ValidationPipe())
+    approveStudentinCourse(@Param('id', ParseIntPipe) id: any): any{
+        return this.instructorservice.approveStudentinCourse(id);
+    }
+
+    //-----Reject Student Request for Purchese Course-----//
+    @Delete("/student/rejectstudent/:id")
+    rejectStudentByInstructor(@Param('id', ParseIntPipe) id: any): any{
+        return this.instructorservice.rejectStudentByInstructor(id);
+    }
     
 
     //-----Find Student By ID-----//
-    @Get("/findstudent/:id")
-    getStudentByID(@Param("id") id:number,):any{
+    @Get("/student/findstudent/:id")
+    getStudentByID(@Param('id', ParseIntPipe) id: any): any{
         return this.instructorservice.getStudentByID(id);
     }
 
-    //-----Find Student By Course Name-----//
+    //-----Find Student By Course ID-----[ERROR]//
+    @Get("/student/findstudentbycourse/:id")
+    getStudentsByCourseID(@Param('id', ParseIntPipe) id: any): any{
+        return this.instructorservice.getStudentsByCourseID(id);
+    }
 
-    //-----Delete Student-----//
 
     //-----Delete Instructor-----//
     @Delete("/deleteinstructor/:id")
+    @UseGuards(InstructorSessionGuard)
     deleteInstructorByID(@Param("id", ParseIntPipe) id: number): any{
         return this.instructorservice.deleteInstructorByID(id);
+    }
+
+    //-----Instructor Logout-----//
+    @Get('/logout')
+    @UseGuards(InstructorSessionGuard)
+    logout(@Session() session) {
+        if(session.destroy())
+            return {message: "Logged out successful"};
+        
+        else
+            throw new UnauthorizedException("invalid actions");
     }
 
     //--------------------Instructor Access Part End--------------------//
 
     //--------------------Course Related Part Start--------------------//
 
-    //-----Add Course Content-----//
+    //-----Add Course-----//
     @Post("/insertcourse")
     @UsePipes(new ValidationPipe())
     insertCourse(@Body() instructordto: Course): any{
         return this.instructorservice.insertCourse(instructordto);
     }
 
-    //-----Modify Course Content-----//
+    //-----Upload Course Content-----//
+    @Post('/uploadfile')
+    @UseInterceptors(FileInterceptor('myfile', {
+        storage: diskStorage({
+            destination: './Uploaded File',
+            filename: function(req, file, cb){
+                cb(null, Date.now()+ "_Instructor" + file.originalname)
+            }
+        })
+    }))
+    FileUpload(@Body() fileuploaddto: FileUpload, @UploadedFile(new ParseFilePipe({
+        validators: [
+            new MaxFileSizeValidator({ maxSize: 10000000}),
+            new FileTypeValidator({fileType: 'png|jpg|jpeg|pdf|doc|docx|'}),
+        ],
+    }),) myfile: Express.Multer.File){
+        fileuploaddto.filename = myfile.filename;
+        return this.instructorservice.FileUpload(fileuploaddto);
+    }
+    
 
 
     //-----Delete Course Content-----//
+    @Delete("/deletecoursecontent/:id")
+    //@UseGuards(SessionGuard)
+    deletecoursecontent(@Param('id', ParseIntPipe) id: any): any {
+        return this.instructorservice.deletecoursecontent(id);
+    }
 
 
     //-----Certification-----//
+    @Get("/certificate/:id")
+    async getCertificateByID(@Res() res, @Param('id') id: any){
+        try{
+            const filename = await this.instructorservice.getCertificateByID(id);
 
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+            const fileStream = fs.createReadStream(filename);
+            fileStream.pipe(res);
+        }
+        catch(error)
+        {
+            console.error(error);
+            return "PDF Can Not Generated!";
+        }
+    }
 
     //--------------------Course Related Part End--------------------//
 

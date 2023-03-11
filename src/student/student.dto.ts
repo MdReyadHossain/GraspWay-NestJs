@@ -1,10 +1,16 @@
 import { IsAlpha, IsEmail, IsInt, IsNotEmpty, IsPhoneNumber, IsString, Length, Matches, MaxLength, Min, MinLength } from "class-validator";
 
-export class Student{
+export class StudentLogin {
+    email: string;
+
+    password: string;
+}
+
+export class Studentinfo{
     
-    @IsNotEmpty({message: "Instructor Name Can't be Empty."})
-    @MinLength(5, {message: "Instructor Name Must be Greater Than 5 Character."})
-    @MaxLength(50, {message: "Instructor Name Must be Less Than 50 Character."})
+    @IsNotEmpty({message: "Student Name Can't be Empty."})
+    @MinLength(5, {message: "Student Name Must be Greater Than 5 Character."})
+    @MaxLength(50, {message: "Student Name Must be Less Than 50 Character."})
     @IsAlpha()
     studentname: string;
 
@@ -20,10 +26,6 @@ export class Student{
     @IsNotEmpty({message: "Enter Your Password."})
     @MinLength(8, {message: "Password Must be Greater Than 8 Character."})
     password: string;
-
-    @IsNotEmpty({message: "Enter Your Password."})
-    @Min(18, {message: "Instructor Must be Older Than 18."})
-    age: number;
 
     @IsNotEmpty({message: "Enter Your Date of Birth."})
     @Matches(/^\d{4}-\d{2}-\d{2}$/i, {message: "Date of Birth is Invalid."})

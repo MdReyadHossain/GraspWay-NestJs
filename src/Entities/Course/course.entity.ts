@@ -13,7 +13,7 @@ export class CourseEntity {
     coursename: string;
 
     @ManyToOne(() => InstructorEntity, (instructor) => instructor.course)
-    instructor: CourseEntity;
+    instructor: InstructorEntity;
 
     @ManyToOne(() => CatagoryEntity, (catagory) => catagory.course)
     catagory: CatagoryEntity;

@@ -1,19 +1,31 @@
 import * as bcrypt from "bcrypt";
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Course, EditInfo, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
+import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
 import { Subject } from "rxjs";
 import { MailerService } from "@nestjs-modules/mailer/dist";
+import { CourseContentEntity } from "src/Entities/Course/content.entity";
+import { CourseEntity } from "src/Entities/Course/course.entity";
+import { StudentEntity } from "src/student/student.entity";
+import { CourseStudentEntity } from "src/Entities/CourseStudent/coursestudent.entity";
+import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
+import { resolve } from "path";
+import * as PDFDocument from 'pdfkit';
+import * as fs from 'fs';
 
 @Injectable()
 export class InstructorService{
     adminRepo: any;
 
     constructor(
-        @InjectRepository(InstructorEntity)
-        private instructorRepo: Repository<InstructorEntity>,
+        @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
+        @InjectRepository(CourseContentEntity) private contentRepo: Repository<CourseContentEntity>,
+        @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,
+        @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>,
+        @InjectRepository(CourseStudentEntity) private coursestudentRepo: Repository<CourseStudentEntity>,
+        @InjectRepository(CatagoryEntity) private catagoryRepo: Repository<CatagoryEntity>,
         private readonly mailerService: MailerService
     ) {}
 
@@ -31,6 +43,7 @@ export class InstructorService{
         instructoraccount.email = instructor.email;
         instructoraccount.age = instructor.age;
         instructoraccount.dob = instructor.dob;
+        instructoraccount.status = false;
 
         const passhash = await bcrypt.genSalt();
         instructoraccount.password = await bcrypt.hash(instructor.password, passhash);
@@ -56,19 +69,20 @@ export class InstructorService{
     //-----Instructor Login-----//
     async login(instructor: InstructorLogin){
         const name = await this.instructorRepo.findOneBy({ instructorname: instructor.instructorname });
-        const isValidPass = await bcrypt.compare(instructor.password, name.password) 
         
-        if(isValidPass){
-            return instructor.instructorname + " Login Successful!!"
+        if(name){
+            const isValidPass = await bcrypt.compare(instructor.password, name.password);
+            if(isValidPass){
+                return 1;
+            }
+            
+            else{
+                return 0;
+            }            
         }
 
         else{
-            if(name == null){
-                return instructor.instructorname + " Instructor Not Found!"
-            }
-            if(!isValidPass){
-                return "Incorrect Password!"
-            }
+            return 0;            
         }
     }
 
@@ -122,8 +136,10 @@ export class InstructorService{
     //-----Instructor Dashboard-----//
     async getDashboard(): Promise<any>{
         const instructorcount = await this.instructorRepo.count({});
+        const studentcount = await this.studentRepo.count({})
         return `Welcome To GraspWay\n\nInstructor Dashboard:
-        Instructor: [${instructorcount}]`;
+        Instructor: [${instructorcount}]
+        Student: [${studentcount}]`;
     }
 
     //-----Instructor Edit Partial Information-----//
@@ -152,8 +168,7 @@ export class InstructorService{
 
             if(isVliad == true){
                 this.instructorRepo.update(id, instructordto);
-                return `Instructor Information Updated:
-                [${this.instructorRepo.findOneBy({id})}]`;
+                return this.instructorRepo.findOneBy({id: id});
             }
         }
         
@@ -183,40 +198,222 @@ export class InstructorService{
         }
     }
 
-    //-----Instructor Search-----//
+    //-----Instructor Search By ID-----//
     async searchInstructorByID(id): Promise<any>{
         const data = this.instructorRepo.findOneBy({id});
         return data;
     }
 
-    //-----Insert Sudent-----//
-    insertStudent(instructordto: InstructorReg):any{
-        //return "Student Inserted Name: " + instructordto.name + " and ID is: " + instructordto.id;
-    }
-
-    getStudentByQuery(qur): any{
-        return "Student Name is " + qur.name + ". ID is " + qur.id;
-    }
-    
-    getStudentByID(id): any{
-        return "Student ID is " + id;
-    }
-
     
 
-    getInstructorProfile(qur): any{
-        return "Instructor Name Changed to " + qur.name +"."
+    //-----Show Al Student-----//
+    getStudents(){
+        return this.studentRepo.find();
     }
 
-    insertCourse(instructordto: Course):any{
-        return instructordto.course + " Course Inserted. Where ID is " + instructordto.id +".";
+    //-----Approve Student Request for Purchese Course-----//
+    approveStudentinCourse(id: any): any{
+        return this.coursestudentRepo.update(id, {status: true});
     }
 
+    //-----Reject Student Request for Purchese Course-----//
+    async rejectStudentByInstructor(id: any): Promise<any>{
+        const user = await this.coursestudentRepo.findOne({
+            where: {
+                status: false,
+                id: id
+            }
+        })
+        if(user){
+            return this.coursestudentRepo.delete(id);        
+        }
+        else{
+            return "Student Not Found!"
+        }
+    }
+
+    //-----Search Student By ID-----//
+    async getStudentByID(id: any){
+        const data = await this.studentRepo.findOne({ where: {id: id} });
+        if(data){
+            return data;
+        }
+        else{
+            return "Student Not Found!"
+        }
+    }
+
+
+    //-----Find Student By Course ID-----//
+    getStudentsByCourseID(id: any): any{
+        // return this.coursestudentRepo.find({
+        //     select: {
+        //         student: true
+        //     },
+        //     where: {
+        //         course: id, 
+        //         status: true
+        //     }, 
+        //     relations: {
+        //         student: true
+        //     }
+        // });
+
+        // return this.coursestudentRepo.find({
+        //     select: ['id'],
+        //     where: {
+        //       course: id, 
+        //       status: true
+        //     }, 
+        //     relations: {
+        //         course: true,
+        //         student: true
+        //     }
+        //   });
+
+        return this.coursestudentRepo.find({
+            // select: {
+            //     student: true
+            // },
+            where: {
+              course: id, 
+              status: true
+            }, 
+            relations: {
+                student: true
+            }
+        });
+    }
+
+    //-----Delete Instructor-----//
+    async deleteInstructorByID(id: any): Promise<any>{
+        const user = await this.instructorRepo.findOne({
+            where: {id: id}
+        })
+        if(user){
+            this.instructorRepo.delete(id);
+            return user.instructorname + " Instructor Deleted Successfuly!";
+        }
+        else{
+            throw new UnauthorizedException({message: "Instrutor Not Found!"})
+        }
+    }
     
+    
+        
 
-    deleteInstructorByID(id): any{
-        return this.instructorRepo.delete(id);
+    //-----Instructor Insert Course-----//
+    async insertCourse(instructordto: Course):Promise<any>{
+        const course = new CourseEntity ()
+        course.coursename = instructordto.coursename;
+        
+        //course.catagory.id = instructordto.catagoryID;
+
+        const instructor = await this.instructorRepo.findOne({
+            select: {
+                id: true
+            },
+            where: {
+                id: instructordto.instructorID
+            }
+        })
+        const catagory = await this.catagoryRepo.findOne({
+            select: {
+                id: true
+            },
+            where:{
+                id: instructordto.catagoryID
+            }
+        })
+
+        course.instructor = instructor;
+        course.catagory = catagory;
+        course.status = false;
+
+        const isValid = await this.courseRepo.findOne({
+            where: {
+                coursename: course.coursename                
+            }
+        })
+        if(!isValid){
+            return await this.courseRepo.save(course);
+        }
+        else{
+            throw new UnauthorizedException({message: "Course Already Exist!"});
+        }        
     }
 
-    
+    //-----Instructor File Upload-----//
+    async FileUpload(fileuploaddto: FileUpload) {
+        const filename = new CourseContentEntity();
+        filename.name = fileuploaddto.filename;
+        filename.status = false;
+        const course = await this.courseRepo.findOne({ 
+            select: {
+                id: true
+            },
+            where: {
+                id: fileuploaddto.id
+            }
+        });
+        if (!course) {
+            throw new UnauthorizedException(`Could not find course with id ${fileuploaddto.id}`);
+        }
+        else{
+            filename.course = course;
+            return await this.contentRepo.save(filename);
+        }
+        
+    }
+
+    //-----Delete Course Content-----//
+    async deletecoursecontent(id: number): Promise<any> {
+        const user = await this.contentRepo.findOne({
+            where: { id: id }
+        })
+
+        if(user){
+            const data = this.contentRepo.delete(id);
+            return "Course Content Deleted!";
+        }
+        else{
+            throw new UnauthorizedException({message: "Content Not Found!"});
+        }
+            
+    }
+
+    //-----Instructor Provide Certificate-----//
+    async getCertificateByID(id: any): Promise<any> {
+        const data = await this.studentRepo.findOne({ where: {id: id} });
+
+        if(data){
+            try{
+                return new Promise<string>((resolve, reject) => {
+                    const doc = new PDFDocument();
+        
+                    doc.image('./Image/Logo.png', { fit: [250, 300], align: 'center' });
+        
+                    doc.fontSize(16).text(`\nWelcome To GraspWay\nCongratulation For Completing the Course.\nUser ID_${id}`, { align: 'center' });
+        
+                    const filename = `Certificate/certificate_${id}.pdf`;
+                    const writeStream = fs.createWriteStream(filename);
+                    doc.pipe(writeStream);
+                    doc.end();
+                    
+                    writeStream.on('finish', () => {
+                        resolve(filename);
+                    });
+                    writeStream.on('error', (error) => {
+                        reject(error);
+                    });
+                });
+            }
+            catch{
+                throw new UnauthorizedException({message: "Student Not Found!"});
+            }            
+        }
+        else{
+            return "Student ID Not Found!"
+        }        
+    }
 }

@@ -6,10 +6,10 @@ import { Repository } from "typeorm";
 import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminEntity } from "./admin.entity";
 import { InstructorEntity } from "src/instructor/instructor.entity";
-import { StudentEntity } from "src/student/student.entity";
 import { ManagerEntity } from "src/manager/manager.entity";
 import { CourseEntity } from "src/Entities/Course/course.entity";
 import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
+import { StudentEntity } from "src/student/student.entity";
 
 @Injectable()
 export class AdminService {
@@ -189,7 +189,7 @@ export class AdminService {
         return this.managerRepo.update(id, {status: true});
     }
 
-    async rejecteManagerByAdmin(id: any): Promise<any> {
+    async rejectManagerByAdmin(id: any): Promise<any> {
         const user = await this.managerRepo.findOne({
             where: {
                 status: false,
@@ -231,7 +231,9 @@ export class AdminService {
 // ------------------- Instructor Related service [Start] ---------------------//
 
     getinstructors(): any {
-        return this.instructorRepo.find();
+        return this.instructorRepo.find({
+            where: {status: true}
+        });
     }
 
     approveInstructorbyAdmin(id: any): any {

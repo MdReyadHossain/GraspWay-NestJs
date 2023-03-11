@@ -15,25 +15,25 @@ import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [InstructorModule, AdminModule, StudentModule, ManagerModule, CourseModule, CatagroyModule, CourseStudentModule,
     TypeOrmModule.forRoot({
-      // type: 'postgres',
-      // host: 'satao.db.elephantsql.com',
-      // port: 5432,
-      // username: 'zstnnmsu',
-      // password: 'U_OP-727SHwzfCwxVnwQBvspwkwvQj8w',
-      // database: 'zstnnmsu',
-      // autoLoadEntities: true,
-      // synchronize: true,
+      type: 'postgres',
+      host: 'satao.db.elephantsql.com',
+      port: 5432,
+      username: 'zstnnmsu',
+      password: 'U_OP-727SHwzfCwxVnwQBvspwkwvQj8w',
+      database: 'zstnnmsu',
+      autoLoadEntities: true,
+      synchronize: true,
 
       //-----------x------------\\
       
-      type: 'postgres',
-      host: 'localhost',
-      port: 5433,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'postgres',
-      autoLoadEntities: true,
-      synchronize: true,
+      // type: 'postgres',
+      // host: 'localhost',
+      // port: 5433,
+      // username: 'postgres',
+      // password: 'postgres',
+      // database: 'postgres',
+      // autoLoadEntities: true,
+      // synchronize: true,
     }),
     MailerModule.forRoot({
         transport: {
