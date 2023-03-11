@@ -190,8 +190,8 @@ export class AdminController {
 
     @Patch("/instructor/approveInstructor/:id")
     @UseGuards(SessionGuard)
-    addInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
-        return this.adminservice.addInstructorbyAdmin(id);
+    approveInstructorbyAdmin(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.approveInstructorbyAdmin(id);
     }
 
     @Delete("/instructor/rejectInstructor/:id")
@@ -220,11 +220,8 @@ export class AdminController {
 
     @Patch("/courseStatus/")
     @UseGuards(SessionGuard)
-    courseStatus(
-        @Body('id', ParseIntPipe) id: number, 
-        @Body() course: any
-        ): any {
-        return this.adminservice.courseStatus(id, course);
+    courseStatus(@Body('id', ParseIntPipe) id: number): any {
+        return this.adminservice.courseStatus(id);
     }
 
     @Delete("/deleteCourse/:id")

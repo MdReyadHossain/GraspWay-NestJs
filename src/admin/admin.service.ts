@@ -8,6 +8,7 @@ import { AdminEntity } from "./admin.entity";
 import { InstructorEntity } from "src/instructor/instructor.entity";
 import { StudentEntity } from "src/student/student.entity";
 import { ManagerEntity } from "src/manager/manager.entity";
+import { CourseEntity } from "src/Entities/Course/course.entity";
 
 @Injectable()
 export class AdminService {
@@ -19,6 +20,7 @@ export class AdminService {
         @InjectRepository(ManagerEntity) private managerRepo: Repository<ManagerEntity>,
         @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
         @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>,        
+        @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,        
         private readonly mailerService: MailerService
     ) {}
 
@@ -115,7 +117,7 @@ export class AdminService {
             return "Invalid or expired pin.";
     }
 
-// ------------------- Admin Related Routes [Start] ---------------------//    
+// ------------------- Admin Related service [Start] ---------------------//    
 
     async getDashboard(): Promise<any> {
         const admin = await this.adminRepo.count({});
@@ -165,13 +167,13 @@ export class AdminService {
             return "Admin deleted!";
         }
         else 
-        throw new UnauthorizedException("ID not found");
+            throw new UnauthorizedException("ID not found");
     }
 
-// ------------------- Admin Related Routes [End] ---------------------//
+// ------------------- Admin Related service [End] ---------------------//
 
 
-// ------------------- Manager Related Routes [Start] ---------------------//
+// ------------------- Manager Related service [Start] ---------------------//
 
     getmanagers(): any {
         return this.managerRepo.find({
@@ -221,47 +223,83 @@ export class AdminService {
             throw new UnauthorizedException("Manager not found");
     }
 
-// ------------------- Manager Related Routes [End] ---------------------//
+// ------------------- Manager Related service [End] ---------------------//
 
 
-// ------------------- Instructor Related Routes [Start] ---------------------//
+// ------------------- Instructor Related service [Start] ---------------------//
 
     getinstructors(): any {
-        throw new Error("Method not implemented.");
+        return this.instructorRepo.find();
     }
 
-    addInstructorbyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+    approveInstructorbyAdmin(id: any): any {
+        return this.instructorRepo.update(id, {status: true});
     }
 
-    rejectInstructorbyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+    async rejectInstructorbyAdmin(id: any): Promise<any> {
+        const user = await this.instructorRepo.findOne({
+            where: {
+                status: false,
+                id: id
+            }
+        })
+        
+        if(user)
+            return this.managerRepo.delete(id);
+        
+        else
+            throw new UnauthorizedException("invalid id");
     }
 
     searchInstructorbyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+        return this.instructorRepo.find({ 
+            where: {id:id}
+        });
     }
 
-    deleteInstructorbyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+    async deleteInstructorbyAdmin(id: any): Promise<any> {
+        const user = await this.instructorRepo.findOne({
+            where: { id: id },
+            relations: { course: true }
+        })
+
+        if(user)
+            return this.instructorRepo.delete(id);
+        
+        else
+            throw new UnauthorizedException("Instructor not found");
     }
 
     searchCoursebyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+        return this.courseRepo.find({ 
+            where: {id:id},
+            relations: {
+                instructor: true,
+                catagory:true
+            },
+        });
     }
 
-    courseStatus(id: number, course: any): any {
-        throw new Error("Method not implemented.");
+    courseStatus(id: number): any {
+        return this.courseRepo.update(id, {status: true});
     }
 
-    deleteCourseByAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+    async deleteCourseByAdmin(id: any): Promise<any> {
+        const user = await this.courseRepo.findOne({
+            where: { id: id }
+        })
+
+        if(user)
+            return this.courseRepo.delete(id);
+        
+        else
+            throw new UnauthorizedException("Course not found");
     }
 
-// ------------------- Instructor Related Routes [End] ---------------------//
+// ------------------- Instructor Related service [End] ---------------------//
 
 
-// ------------------- Student Related Routes [Start] ---------------------//
+// ------------------- Student Related service [Start] ---------------------//
 
     getStudent(): any {
         throw new Error("Method not implemented.");
@@ -279,10 +317,10 @@ export class AdminService {
         throw new Error("Method not implemented.");
     }
 
-// ------------------- Student Related Routes [End] ---------------------//
+// ------------------- Student Related service [End] ---------------------//
 
 
-// ------------------- Website Related Routes [Start] ---------------------//
+// ------------------- Website Related service [Start] ---------------------//
 
     addCatagory(cat: any): any {
         throw new Error("Method not implemented.");
@@ -292,5 +330,5 @@ export class AdminService {
         throw new Error("Method not implemented.");
     }
     
-// ------------------- Website Related Routes [End] ---------------------//
+// ------------------- Website Related service [End] ---------------------//
 }
