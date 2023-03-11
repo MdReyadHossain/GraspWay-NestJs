@@ -9,6 +9,9 @@ export class CourseStudentEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    status: boolean;
+
     @ManyToOne(() => CourseEntity, (course) => course.coursestudents)
     course: CourseEntity;
 

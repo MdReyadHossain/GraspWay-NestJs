@@ -18,7 +18,6 @@ export class StudentService {
         studentaccount.password = student.password;
         studentaccount.phonenumber = student.phonenumber;
         studentaccount.email = student.email;
-        studentaccount.age = student.age;
         studentaccount.dob = student.dob;
         
         return this.studentRepo.save(studentaccount)

@@ -19,10 +19,10 @@ export class StudentEntity{
     email: string;
 
     @Column()
-    age: number;
+    dob: Date;
 
     @Column()
-    dob: Date;
+    status: boolean;
 
     @OneToMany(() => CourseStudentEntity, (coursestudents) => coursestudents.course)
     coursestudents: CourseStudentEntity[];

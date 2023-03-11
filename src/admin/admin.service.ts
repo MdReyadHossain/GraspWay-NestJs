@@ -3,12 +3,13 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
+import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminEntity } from "./admin.entity";
 import { InstructorEntity } from "src/instructor/instructor.entity";
 import { StudentEntity } from "src/student/student.entity";
 import { ManagerEntity } from "src/manager/manager.entity";
 import { CourseEntity } from "src/Entities/Course/course.entity";
+import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
 
 @Injectable()
 export class AdminService {
@@ -21,6 +22,7 @@ export class AdminService {
         @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
         @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>,        
         @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,        
+        @InjectRepository(CatagoryEntity) private catagoryRepo: Repository<CatagoryEntity>,        
         private readonly mailerService: MailerService
     ) {}
 
@@ -262,10 +264,15 @@ export class AdminService {
             where: { id: id },
             relations: { course: true }
         })
-
-        if(user)
-            return this.instructorRepo.delete(id);
         
+        if(user) {
+            // const courses = user.course;
+
+            // if (courses && courses.length > 0) {
+            //     await Promise.all(courses.map(course => this.courseRepo.remove(course)));
+            // }
+            return this.instructorRepo.delete(id);
+        }
         else
             throw new UnauthorizedException("Instructor not found");
     }
@@ -302,19 +309,30 @@ export class AdminService {
 // ------------------- Student Related service [Start] ---------------------//
 
     getStudent(): any {
-        throw new Error("Method not implemented.");
+        return this.studentRepo.find();
     }
 
     searchStudentbyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+        return this.studentRepo.find({ 
+            where: { id:id },
+            relations: { coursestudents: true }
+        });
     }
 
-    setStudentStatus(id: number, Student: any): any {
-        throw new Error("Method not implemented.");
+    setStudentStatus(id: number, status: boolean): any {
+        return this.studentRepo.update(id, {status: status});
     }
 
-    deleteStudentbyAdmin(id: any): any {
-        throw new Error("Method not implemented.");
+    async deleteStudentbyAdmin(id: any): Promise<any> {
+        const user = await this.studentRepo.findOne({
+            where: { id: id }
+        })
+
+        if(user)
+            return this.studentRepo.delete(id);
+        
+        else
+            throw new UnauthorizedException("Course not found");
     }
 
 // ------------------- Student Related service [End] ---------------------//
@@ -322,12 +340,33 @@ export class AdminService {
 
 // ------------------- Website Related service [Start] ---------------------//
 
-    addCatagory(cat: any): any {
-        throw new Error("Method not implemented.");
+    addCatagory(cat: AdminCatagory): any {
+        const catag = new CatagoryEntity()
+        catag.Catagoryname = cat.name;
+        return this.catagoryRepo.save(catag);
     }
 
-    customizeCatagory(id: number, cat: any): any {
-        throw new Error("Method not implemented.");
+    async customizeCatagory(id: number, cat: AdminCatagory): Promise<any> {
+        const user = await this.catagoryRepo.findOne({
+            where: { id: id }
+        })
+        
+        if(user)
+            return this.catagoryRepo.update(id, {Catagoryname: cat.name});
+        else
+            throw new UnauthorizedException("Catagory not found");
+    }
+
+    async deleteCatagory(id: number): Promise<any> {
+        const user = await this.catagoryRepo.findOne({
+            where: { id: id }
+        })
+
+        if(user)
+            return this.catagoryRepo.delete(id);
+        
+        else
+            throw new UnauthorizedException("Catagory not found");
     }
     
 // ------------------- Website Related service [End] ---------------------//

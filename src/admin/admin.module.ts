@@ -1,6 +1,7 @@
 import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
 import { CourseEntity } from "src/Entities/Course/course.entity";
 import { InstructorEntity } from "src/instructor/instructor.entity";
 import { ManagerEntity } from "src/manager/manager.entity";
@@ -11,7 +12,7 @@ import { AdminEntity } from "./admin.entity";
 import { AdminService } from "./admin.service";
 
 @Module({
-    imports:[TypeOrmModule.forFeature([AdminEntity, ManagerEntity, InstructorEntity, StudentEntity, CourseEntity])],
+    imports:[TypeOrmModule.forFeature([AdminEntity, ManagerEntity, InstructorEntity, StudentEntity, CourseEntity, CatagoryEntity])],
     controllers:[AdminController],
     providers:  [AdminService, ManagerService]
 })

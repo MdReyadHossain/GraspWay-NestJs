@@ -1,7 +1,7 @@
 import { FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards } from "@nestjs/common/decorators";
 import { SessionGuard } from "./session.guard";
-import { AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
+import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminService } from "./admin.service";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -95,6 +95,7 @@ export class AdminController {
         })
     }))
     editProfile(
+        @Session() session,
         @UploadedFile(new ParseFilePipe({
                 validators: [
                     new MaxFileSizeValidator({ maxSize: 2097152 }),
@@ -105,6 +106,7 @@ export class AdminController {
         @Body('id', ParseIntPipe) id: number, 
         @Body() admin: AdminProfile
         ): any {
+        id = session
         admin.adminImage = adminImage.filename;
         return this.adminservice.editProfile(id, admin);
     }
@@ -252,9 +254,9 @@ export class AdminController {
     @UseGuards(SessionGuard)
     setStudentStatus(
         @Body('id', ParseIntPipe) id: number, 
-        @Body() student: any
+        @Body() status: boolean
         ): any {
-        return this.adminservice.setStudentStatus(id, student);
+        return this.adminservice.setStudentStatus(id, status);
     }
 
     @Delete("/student/deleteStudent/:id")
@@ -272,7 +274,7 @@ export class AdminController {
     @Post('/addCatagory')
     @UsePipes(new ValidationPipe())
     addCatagory(
-        @Body() cat: any
+        @Body() cat: AdminCatagory
         ): any {
         return this.adminservice.addCatagory(cat);
     }
@@ -282,9 +284,15 @@ export class AdminController {
     @UsePipes(new ValidationPipe())
     customizeCatagory(
         @Body('id', ParseIntPipe) id: number, 
-        @Body() cat: any
+        @Body() cat: AdminCatagory
         ): any {
         return this.adminservice.customizeCatagory(id, cat);
+    }
+
+    @Delete("/deleteCatagory/:id")
+    @UseGuards(SessionGuard)
+    deleteCatagory(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteCatagory(id);
     }
 
 // ------------------- Website Related Routes [End] ---------------------//
