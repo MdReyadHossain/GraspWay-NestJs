@@ -42,8 +42,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
             ignoreTLS: true,
             secure: true,
             auth: {
-                user: 'blazeaxelspy@gmail.com',
-                pass: 'tjnadpxurnrlqzff'
+                user: 'email',
+                pass: 'pass'
             },
         }
     }),
