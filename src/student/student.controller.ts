@@ -3,22 +3,21 @@ import { Course, Studentinfo, StudentLogin } from "./student.dto";
 import { StudentService } from "./student.service";
 
 @Controller("/student")
-export class StudentController
-{
+export class StudentController {
     instructorservice: any;
-    constructor(private studentservice: StudentService){}
-   //--------------------General Part Start--------------------//
+    constructor(private studentservice: StudentService) { }
+    //--------------------General Part Start--------------------//
 
     //-----Student Registration-----// 
     @Post("/registration")
     @UsePipes(new ValidationPipe())
-    registration(@Body() studentdto: Studentinfo):any{
+    registration(@Body() studentdto: Studentinfo): any {
         return this.studentservice.registration(studentdto);
     }
     //-----Student Login-----//
     @Post("/login")
     @UsePipes(new ValidationPipe())
-    login(@Body() studentdto: StudentLogin): any{
+    login(@Body() studentdto: StudentLogin): any {
         return this.studentservice.login(studentdto);
     }
 
@@ -28,26 +27,26 @@ export class StudentController
     //     return this.studentservice.forgetpin(studentdto);
     // }
 
- //-----Student Verify Pin-----//
+    //-----Student Verify Pin-----//
     // @Post("/verifypin")
     // verifypin(@Body() studentdto: VerifyPin): any{
     //     return this.studentservice.verifypin(studentdto);
     // }
 
- //--------------------General Part End--------------------//
+    //--------------------General Part End--------------------//
 
- //--------------------Student Access Part Start--------------------//
- 
- //-----Instructor Dashboard-----//
+    //--------------------Student Access Part Start--------------------//
+
+    //-----Instructor Dashboard-----//
     @Get("/dashboard")
-    getStudent(): any{
+    getStudent(): any {
         return this.studentservice.getDashboard();
     }
 
     //-----Student Edit Profile-----//
     @Patch("/editstudentinfo/:id")
     @UsePipes(new ValidationPipe())
-    editInfoByID(@Body() studentdto: Studentinfo, @Param('id', ParseIntPipe) id: number): any{
+    editInfoByID(@Body() studentdto: Studentinfo, @Param('id', ParseIntPipe) id: number): any {
         return this.studentservice.editInfoByID(studentdto, id);
     }
 
@@ -72,14 +71,14 @@ export class StudentController
     // getInstructorByID(@Param("id") id:number,):any{
     //     return this.studentservice.getInstructorByID(id);
     // }
-    
+
     // @Put("/updatestudent/:id")
     // updateStudentByID(@Body() studentdto:Student, @Param('id', ParseIntPipe) id: number): any {
     //     return this.studentservice.updateStudentByID(studentdto, id);
     // }
 
     @Delete("/deletestudent/:id")
-    deleteStudentByID(@Param("id", ParseIntPipe) id: number): any{
+    deleteStudentByID(@Param("id", ParseIntPipe) id: number): any {
         return this.studentservice.deleteStudentByID(id);
     }
 

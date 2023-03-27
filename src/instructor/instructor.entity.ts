@@ -11,15 +11,12 @@ export class InstructorEntity {
 
     @Column()
     password: string;
-    
-    @Column()
-    phonenumber: string;
-    
-    @Column()
-    email: string;
 
     @Column()
-    age: number;
+    phonenumber: string;
+
+    @Column()
+    email: string;
 
     @Column()
     dob: Date;

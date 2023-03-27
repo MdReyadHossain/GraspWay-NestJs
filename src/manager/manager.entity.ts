@@ -1,5 +1,5 @@
 import { AdminEntity } from "src/admin/admin.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("Managers")
 export class ManagerEntity {
@@ -11,10 +11,10 @@ export class ManagerEntity {
 
     @Column()
     password: string;
-    
+
     @Column()
     phonenumber: string;
-    
+
     @Column()
     email: string;
 

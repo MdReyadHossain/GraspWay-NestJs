@@ -20,11 +20,11 @@ export class AdminService {
         @InjectRepository(AdminEntity) private adminRepo: Repository<AdminEntity>,
         @InjectRepository(ManagerEntity) private managerRepo: Repository<ManagerEntity>,
         @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
-        @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>,        
-        @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,        
-        @InjectRepository(CatagoryEntity) private catagoryRepo: Repository<CatagoryEntity>,        
+        @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>,
+        @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,
+        @InjectRepository(CatagoryEntity) private catagoryRepo: Repository<CatagoryEntity>,
         private readonly mailerService: MailerService
-    ) {}
+    ) { }
 
 
     async addAdmin(admin: AdminProfile) {
@@ -35,14 +35,14 @@ export class AdminService {
         adminaccount.address = admin.address;
         adminaccount.joiningYear = admin.joiningYear;
         adminaccount.adminImage = admin.adminImage;
-        
+
         const salt = await bcrypt.genSalt();
         adminaccount.password = await bcrypt.hash(admin.password, salt);
 
         const isValidName = await this.adminRepo.findOneBy({ name: admin.name });
         const isValidEmail = await this.adminRepo.findOneBy({ email: admin.email });
 
-        if(!isValidName && !isValidEmail) {
+        if (!isValidName && !isValidEmail) {
             await this.adminRepo.save(adminaccount);
             return "Admin successfully added";
         }
@@ -57,20 +57,20 @@ export class AdminService {
         });
 
         try {
-            if(admin.password == user.password)
+            if (admin.password == user.password)
                 return 1;
-            
+
             else {
                 const isValid = await bcrypt.compare(admin.password, user.password);
 
-                if(isValid) 
+                if (isValid)
                     return 1;
-                
-                else if(!isValid)
+
+                else if (!isValid)
                     return 0;
             }
         }
-        catch{
+        catch {
             return 0;
         }
     }
@@ -104,13 +104,13 @@ export class AdminService {
 
     async varifyPass(admin: AdminVarifyPass) {
         let isValid = false;
-        if(admin.pin == this.pin)
+        if (admin.pin == this.pin)
             isValid = true;
 
-        if(isValid) {
+        if (isValid) {
             const salt = await bcrypt.genSalt();
             admin.password = await bcrypt.hash(admin.password, salt);
-            this.adminRepo.update(this.id, {password: admin.password} );
+            this.adminRepo.update(this.id, { password: admin.password });
             this.pin = null;
             return "Password reseted!";
         }
@@ -119,7 +119,7 @@ export class AdminService {
             return "Invalid or expired pin.";
     }
 
-// ------------------- Admin Related service [Start] ---------------------//    
+    // ------------------- Admin Related service [Start] ---------------------//    
 
     async getDashboard(): Promise<any> {
         const admin = await this.adminRepo.count({});
@@ -144,38 +144,53 @@ export class AdminService {
 
 
     async resetPassword(id: number, admin: AdminProfile) {
-        const salt = await bcrypt.genSalt();
-        admin.password = await bcrypt.hash(admin.password, salt);
+        const user = await this.adminRepo.findOne({
+            where: {
+                id: id
+            }
+        });
 
-        console.log(this.adminRepo.update(id, {password: admin.password} ));
-        return "Password reseted!";
+        try {
+            if (user) {
+                const salt = await bcrypt.genSalt();
+                admin.password = await bcrypt.hash(admin.password, salt);
+
+                console.log(this.adminRepo.update(id, { password: admin.password }));
+                return "Password reseted!";
+            }
+            else
+                throw new UnauthorizedException("ID not found");
+        }
+        catch {
+            throw new UnauthorizedException("ID not found");
+        }
     }
 
 
     getAdminByid(id): any {
-        console.log(`Admin Found!`)
+        console.log(`Admin Found!`);
         return this.adminRepo.findOneBy({ id });
     }
 
-    
+
     async deleteAdminByID(id: any): Promise<any> {
-        const user = await this.managerRepo.findOne({
+        const user = await this.adminRepo.findOne({
             where: {
                 id: id
             }
-        })
-        if(user) {
+        });
+        if (user) {
             this.adminRepo.delete(id);
             return "Admin deleted!";
         }
-        else 
+        else
             throw new UnauthorizedException("ID not found");
     }
 
-// ------------------- Admin Related service [End] ---------------------//
+    // ------------------- Admin Related service [End] ---------------------//
 
 
-// ------------------- Manager Related service [Start] ---------------------//
+    // ------------------- Manager Related service [Start] ---------------------//
 
     getmanagers(): any {
         return this.managerRepo.find({
@@ -186,7 +201,7 @@ export class AdminService {
     }
 
     approveManagerByAdmin(id: any): any {
-        return this.managerRepo.update(id, {status: true});
+        return this.managerRepo.update(id, { status: true });
     }
 
     async rejectManagerByAdmin(id: any): Promise<any> {
@@ -196,17 +211,17 @@ export class AdminService {
                 id: id
             }
         })
-        
-        if(user)
+
+        if (user)
             return this.managerRepo.delete(id);
-        
+
         else
             throw new UnauthorizedException("invalid id");
     }
 
     searchManagerByAdmin(id: any): any {
-        return this.managerRepo.find({ 
-            where: {id:id},
+        return this.managerRepo.find({
+            where: { id: id },
             relations: {
                 admin: true,
             },
@@ -218,26 +233,26 @@ export class AdminService {
             where: { id: id },
         })
 
-        if(user)
+        if (user)
             return this.managerRepo.delete(id);
-        
+
         else
             throw new UnauthorizedException("Manager not found");
     }
 
-// ------------------- Manager Related service [End] ---------------------//
+    // ------------------- Manager Related service [End] ---------------------//
 
 
-// ------------------- Instructor Related service [Start] ---------------------//
+    // ------------------- Instructor Related service [Start] ---------------------//
 
     getinstructors(): any {
         return this.instructorRepo.find({
-            where: {status: true}
+            where: { status: true }
         });
     }
 
     approveInstructorbyAdmin(id: any): any {
-        return this.instructorRepo.update(id, {status: true});
+        return this.instructorRepo.update(id, { status: true });
     }
 
     async rejectInstructorbyAdmin(id: any): Promise<any> {
@@ -247,17 +262,17 @@ export class AdminService {
                 id: id
             }
         })
-        
-        if(user)
+
+        if (user)
             return this.managerRepo.delete(id);
-        
+
         else
             throw new UnauthorizedException("invalid id");
     }
 
     searchInstructorbyAdmin(id: any): any {
-        return this.instructorRepo.find({ 
-            where: {id:id}
+        return this.instructorRepo.find({
+            where: { id: id }
         });
     }
 
@@ -266,8 +281,8 @@ export class AdminService {
             where: { id: id },
             relations: { course: true }
         })
-        
-        if(user) {
+
+        if (user) {
             // const courses = user.course;
 
             // if (courses && courses.length > 0) {
@@ -280,17 +295,17 @@ export class AdminService {
     }
 
     searchCoursebyAdmin(id: any): any {
-        return this.courseRepo.find({ 
-            where: {id:id},
+        return this.courseRepo.find({
+            where: { id: id },
             relations: {
                 instructor: true,
-                catagory:true
+                catagory: true
             },
         });
     }
 
     courseStatus(id: number): any {
-        return this.courseRepo.update(id, {status: true});
+        return this.courseRepo.update(id, { status: true });
     }
 
     async deleteCourseByAdmin(id: any): Promise<any> {
@@ -298,31 +313,31 @@ export class AdminService {
             where: { id: id }
         })
 
-        if(user)
+        if (user)
             return this.courseRepo.delete(id);
-        
+
         else
             throw new UnauthorizedException("Course not found");
     }
 
-// ------------------- Instructor Related service [End] ---------------------//
+    // ------------------- Instructor Related service [End] ---------------------//
 
 
-// ------------------- Student Related service [Start] ---------------------//
+    // ------------------- Student Related service [Start] ---------------------//
 
     getStudent(): any {
         return this.studentRepo.find();
     }
 
     searchStudentbyAdmin(id: any): any {
-        return this.studentRepo.find({ 
-            where: { id:id },
+        return this.studentRepo.find({
+            where: { id: id },
             relations: { coursestudents: true }
         });
     }
 
     setStudentStatus(id: number, status: boolean): any {
-        return this.studentRepo.update(id, {status: status});
+        return this.studentRepo.update(id, { status: status });
     }
 
     async deleteStudentbyAdmin(id: any): Promise<any> {
@@ -330,17 +345,17 @@ export class AdminService {
             where: { id: id }
         })
 
-        if(user)
+        if (user)
             return this.studentRepo.delete(id);
-        
+
         else
             throw new UnauthorizedException("Course not found");
     }
 
-// ------------------- Student Related service [End] ---------------------//
+    // ------------------- Student Related service [End] ---------------------//
 
 
-// ------------------- Website Related service [Start] ---------------------//
+    // ------------------- Website Related service [Start] ---------------------//
 
     addCatagory(cat: AdminCatagory): any {
         const catag = new CatagoryEntity()
@@ -352,9 +367,9 @@ export class AdminService {
         const user = await this.catagoryRepo.findOne({
             where: { id: id }
         })
-        
-        if(user)
-            return this.catagoryRepo.update(id, {Catagoryname: cat.name});
+
+        if (user)
+            return this.catagoryRepo.update(id, { Catagoryname: cat.name });
         else
             throw new UnauthorizedException("Catagory not found");
     }
@@ -364,12 +379,12 @@ export class AdminService {
             where: { id: id }
         })
 
-        if(user)
+        if (user)
             return this.catagoryRepo.delete(id);
-        
+
         else
             throw new UnauthorizedException("Catagory not found");
     }
-    
-// ------------------- Website Related service [End] ---------------------//
+
+    // ------------------- Website Related service [End] ---------------------//
 }

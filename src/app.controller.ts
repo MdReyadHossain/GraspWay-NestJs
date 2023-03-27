@@ -3,19 +3,19 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+    constructor(private readonly appService: AppService) { }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+    @Get()
+    getHello(): string {
+        return this.appService.getHello();
+    }
 
-  @Get("/home")
-  getHome(): string {
-    return this.appService.getHome();
-  }
-  @Get("/Contact")
-  getContact(): string {
-    return this.appService.getContact();
-  }
+    @Get("/home")
+    getHome(): string {
+        return this.appService.getHome();
+    }
+    @Get("/Contact")
+    getContact(): string {
+        return this.appService.getContact();
+    }
 }

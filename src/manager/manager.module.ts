@@ -1,14 +1,24 @@
 import { Module } from "@nestjs/common";
+import { MailerModule } from "@nestjs-modules/mailer";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AdminEntity } from "src/admin/admin.entity";
 import { ManagerController } from "./manager.controller";
 import { ManagerEntity } from "./manager.entity";
 import { ManagerService } from "./manager.service";
+import { StudentEntity } from "src/student/student.entity";
+import { CourseEntity } from "src/Entities/Course/course.entity";
+import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
+import { AdminEntity } from "src/admin/admin.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ManagerEntity, AdminEntity])],
-    controllers:[ManagerController],
-    providers: [ManagerService],
+    imports: [TypeOrmModule.forFeature(
+        [
+            ManagerEntity,
+            CourseEntity,
+            CatagoryEntity,
+            AdminEntity
+        ])],
+    controllers: [ManagerController],
+    providers: [ManagerService]
 })
 
-export class ManagerModule {}
+export class ManagerModule { }

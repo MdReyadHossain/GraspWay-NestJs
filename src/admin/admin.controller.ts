@@ -9,7 +9,7 @@ import { diskStorage } from "multer";
 
 @Controller("/admin")
 export class AdminController {
-    constructor(private adminservice: AdminService){}
+    constructor(private adminservice: AdminService) { }
 
     @Post('/addAdmin')
     @UsePipes(new ValidationPipe())
@@ -17,20 +17,20 @@ export class AdminController {
         storage: diskStorage({
             destination: './files',
             filename: function (req, file, cb) {
-                cb(null,Date.now() + "_" +file.originalname)
+                cb(null, Date.now() + "_" + file.originalname)
             }
         })
     }))
     addAdmin(
         @UploadedFile(new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({ maxSize: 2097152 }),
-                    new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
-                ]
-            }
+            validators: [
+                new MaxFileSizeValidator({ maxSize: 2097152 }),
+                new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
+            ]
+        }
         )) adminImage: Express.Multer.File,
         @Body() admin: AdminProfile
-        ): any {
+    ): any {
         console.log(adminImage);
         admin.adminImage = adminImage.filename;
         return this.adminservice.addAdmin(admin);
@@ -44,16 +44,12 @@ export class AdminController {
         @Body() admin: AdminLogin
     ) {
         // return this.adminservice.loginAdmin(admin);
-        if(await this.adminservice.loginAdmin(admin)) {
+        if (await this.adminservice.loginAdmin(admin)) {
             session.name = admin.name;
-            session.phoneNo = admin.phoneNo;
-            session.email = admin.email;
-            session.address = admin.address;
-            session.joiningYear = admin.joiningYear;
-            return {message: "Login Succesful!"};
+            return { message: "Login Succesful!" };
         }
         else {
-            return {message: "Username or Password Invalid!"};
+            return { message: "Username or Password Invalid!" };
         }
     }
 
@@ -72,7 +68,7 @@ export class AdminController {
 
 
 
-// ------------------- Admin Related Routes [Start] ---------------------//
+    // ------------------- Admin Related Routes [Start] ---------------------//
 
     // dashboard: show status of all users
     @Get("/dashboard/")
@@ -89,32 +85,32 @@ export class AdminController {
         storage: diskStorage({
             destination: './files',
             filename: function (_req, file, cb) {
-                cb(null,Date.now() + "_" +file.originalname)
+                cb(null, Date.now() + "_" + file.originalname)
             }
         })
     }))
     editProfile(
         @Session() session,
         @UploadedFile(new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({ maxSize: 2097152 }),
-                    new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
-                ]
-            }
+            validators: [
+                new MaxFileSizeValidator({ maxSize: 2097152 }),
+                new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
+            ]
+        }
         )) adminImage: Express.Multer.File,
-        @Body('id', ParseIntPipe) id: number, 
+        @Body('id', ParseIntPipe) id: number,
         @Body() admin: AdminProfile
-        ): any {
+    ): any {
         admin.adminImage = adminImage.filename;
         return this.adminservice.editProfile(id, admin);
     }
-    
+
     @Patch("/resetPassword/")
     @UseGuards(AdminSessionGuard)
     resetPassword(
-        @Body('id', ParseIntPipe) id: number, 
+        @Body('id', ParseIntPipe) id: number,
         @Body() admin: AdminProfile
-        ): any {
+    ): any {
         return this.adminservice.resetPassword(id, admin);
     }
 
@@ -133,18 +129,18 @@ export class AdminController {
     @Get('/logout')
     @UseGuards(AdminSessionGuard)
     logout(@Session() session) {
-        if(session.destroy())
-            return {message: "Logged out successful"};
-        
+        if (session.destroy())
+            return { message: "Logged out successful" };
+
         else
             throw new UnauthorizedException("invalid actions");
     }
 
-// ------------------- Admin Related Routes [End] ---------------------//
+    // ------------------- Admin Related Routes [End] ---------------------//
 
 
 
-// ------------------- Manager Related Routes [Start] ---------------------//
+    // ------------------- Manager Related Routes [Start] ---------------------//
 
     @Get("/manager/")
     @UseGuards(AdminSessionGuard)
@@ -176,11 +172,11 @@ export class AdminController {
         return this.adminservice.deleteManagerByID(id);
     }
 
-// ------------------- Manager Related Routes [End] ---------------------//
+    // ------------------- Manager Related Routes [End] ---------------------//
 
 
 
-// ------------------- Instructor Related Routes [Start] ---------------------//
+    // ------------------- Instructor Related Routes [Start] ---------------------//
 
     @Get("/instructor/")
     @UseGuards(AdminSessionGuard)
@@ -230,11 +226,11 @@ export class AdminController {
         return this.adminservice.deleteCourseByAdmin(id);
     }
 
-// ------------------- Instructor Related Routes [End] ---------------------//
+    // ------------------- Instructor Related Routes [End] ---------------------//
 
 
 
-// ------------------- Student Related Routes [Start] ---------------------//
+    // ------------------- Student Related Routes [Start] ---------------------//
 
     @Get("/student/")
     @UseGuards(AdminSessionGuard)
@@ -251,9 +247,9 @@ export class AdminController {
     @Patch("/student/studentStatus/")
     @UseGuards(AdminSessionGuard)
     setStudentStatus(
-        @Body('id', ParseIntPipe) id: number, 
+        @Body('id', ParseIntPipe) id: number,
         @Body() status: boolean
-        ): any {
+    ): any {
         return this.adminservice.setStudentStatus(id, status);
     }
 
@@ -263,17 +259,17 @@ export class AdminController {
         return this.adminservice.deleteStudentbyAdmin(id);
     }
 
-// ------------------- Student Related Routes [End] ---------------------//
+    // ------------------- Student Related Routes [End] ---------------------//
 
 
 
-// ------------------- Website Related Routes [Start] ---------------------//
+    // ------------------- Website Related Routes [Start] ---------------------//
 
     @Post('/addCatagory')
     @UsePipes(new ValidationPipe())
     addCatagory(
         @Body() cat: AdminCatagory
-        ): any {
+    ): any {
         return this.adminservice.addCatagory(cat);
     }
 
@@ -281,9 +277,9 @@ export class AdminController {
     @UseGuards(AdminSessionGuard)
     @UsePipes(new ValidationPipe())
     customizeCatagory(
-        @Body('id', ParseIntPipe) id: number, 
+        @Body('id', ParseIntPipe) id: number,
         @Body() cat: AdminCatagory
-        ): any {
+    ): any {
         return this.adminservice.customizeCatagory(id, cat);
     }
 
@@ -293,5 +289,5 @@ export class AdminController {
         return this.adminservice.deleteCatagory(id);
     }
 
-// ------------------- Website Related Routes [End] ---------------------//
+    // ------------------- Website Related Routes [End] ---------------------//
 }

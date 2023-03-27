@@ -2,7 +2,7 @@ import { CourseStudentEntity } from "src/Entities/CourseStudent/coursestudent.en
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("Students")
-export class StudentEntity{
+export class StudentEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -20,7 +20,7 @@ export class StudentEntity{
 
     @Column()
     dob: Date;
-    
+
     @Column()
     status: boolean;
 

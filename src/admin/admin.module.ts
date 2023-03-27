@@ -12,9 +12,9 @@ import { AdminEntity } from "./admin.entity";
 import { AdminService } from "./admin.service";
 
 @Module({
-    imports:[TypeOrmModule.forFeature([AdminEntity, ManagerEntity, InstructorEntity, StudentEntity, CourseEntity, CatagoryEntity])],
-    controllers:[AdminController],
-    providers:  [AdminService, ManagerService]
+    imports: [TypeOrmModule.forFeature([AdminEntity, ManagerEntity, InstructorEntity, StudentEntity, CourseEntity, CatagoryEntity])],
+    controllers: [AdminController],
+    providers: [AdminService, ManagerService]
 })
 
-export class AdminModule {}
+export class AdminModule { }

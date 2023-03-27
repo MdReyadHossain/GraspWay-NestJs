@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsEmail, MinLength, MaxLength, IsAlpha, IsAlphanumeric, IsInt, Length, IsString, IsPhoneNumber, Matches, Min, Max, IsIn } from 'class-validator';
 
 
-export class AdminLogin{
+export class AdminLogin {
     @IsNotEmpty({ message: "Name should not be empty!" })
     @IsString({ message: "Name should not be character!" })
     @Length(4, 8, { message: "Input should be between 4 and 8 characters in length!" })
@@ -11,16 +11,6 @@ export class AdminLogin{
     @IsString({ message: "Password should not be character!" })
     @MinLength(6, { message: "Password should be minimum in 6 character!" })
     password: string;
-
-    address: string;
-
-    phoneNo: string;
-
-    email: string;
-    
-    joiningYear: number;
-
-    filename: string;
 }
 
 
@@ -54,7 +44,7 @@ export class AdminProfile {
 }
 
 
-export class AdminVarifyPass{
+export class AdminVarifyPass {
     @IsNotEmpty()
     @IsInt()
     pin: number;
@@ -65,7 +55,7 @@ export class AdminVarifyPass{
 
 
 export class AdminCatagory {
-    @IsNotEmpty({message: "Enter Your Name."})
-    @IsString({message: "Name Should be String."})
+    @IsNotEmpty({ message: "Enter Your Name." })
+    @IsString({ message: "Name Should be String." })
     name: string;
 }

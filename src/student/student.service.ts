@@ -7,16 +7,16 @@ import { StudentEntity } from "./student.entity";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
-export class StudentService{
+export class StudentService {
     constructor(
         @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>
-    ) {}
+    ) { }
     //-----Instructor Registration-----//
-  
+
     //----------Instructor----------//
 
     //-----Instructor Registration-----//
-    async  registration(student: Studentinfo): Promise<any> {
+    async registration(student: Studentinfo): Promise<any> {
         const studentaccount = new StudentEntity();
         studentaccount.studentname = student.studentname;
         studentaccount.password = student.password;
@@ -24,27 +24,27 @@ export class StudentService{
         studentaccount.email = student.email;
         studentaccount.dob = student.dob;
         studentaccount.status = true;
-       
+
         const passhash = await bcrypt.genSalt();
         studentaccount.password = await bcrypt.hash(student.password, passhash);
 
         return this.studentRepo.save(studentaccount);
     }
-    
+
     //-----student Login-----//
-    async login(student: StudentLogin){
+    async login(student: StudentLogin) {
         const name = await this.studentRepo.findOneBy({ email: student.email });
-        const isValidPass = await bcrypt.compare(student.password, name.password) 
-        
-        if(isValidPass){
+        const isValidPass = await bcrypt.compare(student.password, name.password)
+
+        if (isValidPass) {
             return student.email + " Login Successful!!"
         }
 
-        else{
-            if(name == null){
+        else {
+            if (name == null) {
                 return student.email + " Student Not Found!"
             }
-            if(!isValidPass){
+            if (!isValidPass) {
                 return "Incorrect Password!"
             }
         }
@@ -98,14 +98,14 @@ export class StudentService{
     // }
 
     //-----student Dashboard-----//
-    async getDashboard(): Promise<any>{
+    async getDashboard(): Promise<any> {
         const studentcount = await this.studentRepo.count({});
         return `Welcome To GraspWay\n\nStudent Dashboard:
         Student: [${studentcount}]`;
     }
 
     //-----student Edit Partial Information-----//
-    async editInfoByID(studentdto: Studentinfo, id: number): Promise<any>{
+    async editInfoByID(studentdto: Studentinfo, id: number): Promise<any> {
         this.studentRepo.update(id, studentdto);
         return "student Profile Updated!";
     }

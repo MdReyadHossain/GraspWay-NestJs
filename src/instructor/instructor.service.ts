@@ -16,7 +16,7 @@ import * as PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 
 @Injectable()
-export class InstructorService{
+export class InstructorService {
     adminRepo: any;
 
     constructor(
@@ -27,7 +27,7 @@ export class InstructorService{
         @InjectRepository(CourseStudentEntity) private coursestudentRepo: Repository<CourseStudentEntity>,
         @InjectRepository(CatagoryEntity) private catagoryRepo: Repository<CatagoryEntity>,
         private readonly mailerService: MailerService
-    ) {}
+    ) { }
 
     private id: number;
     private pin: number;
@@ -36,12 +36,11 @@ export class InstructorService{
     //----------Instructor----------//
 
     //-----Instructor Registration-----//
-    async registration(instructor: InstructorReg): Promise<any>{
+    async registration(instructor: InstructorReg): Promise<any> {
         const instructoraccount = new InstructorEntity();
         instructoraccount.instructorname = instructor.instructorname;
         instructoraccount.phonenumber = instructor.phonenumber;
         instructoraccount.email = instructor.email;
-        instructoraccount.age = instructor.age;
         instructoraccount.dob = instructor.dob;
         instructoraccount.status = false;
 
@@ -51,46 +50,46 @@ export class InstructorService{
         const isValidName = await this.instructorRepo.findOneBy({ instructorname: instructor.instructorname });
         const isValidEmail = await this.instructorRepo.findOneBy({ email: instructor.email });
 
-        if(!isValidName && !isValidEmail){
+        if (!isValidName && !isValidEmail) {
             await this.instructorRepo.save(instructoraccount);
-            return "Instructor Name : " + instructoraccount.instructorname +" Successfully Added!!"
+            return "Instructor Name : " + instructoraccount.instructorname + " Successfully Added!!"
         }
 
-        else{
-            if(isValidName){
+        else {
+            if (isValidName) {
                 return instructoraccount.instructorname + " Instructor Name Already Registered!"
             }
-            if(isValidEmail){
+            if (isValidEmail) {
                 return instructoraccount.email + " Email Already Registered!"
             }
         }
     }
 
     //-----Instructor Login-----//
-    async login(instructor: InstructorLogin){
+    async login(instructor: InstructorLogin) {
         const name = await this.instructorRepo.findOneBy({ instructorname: instructor.instructorname });
-        
-        if(name){
+
+        if (name) {
             const isValidPass = await bcrypt.compare(instructor.password, name.password);
-            if(isValidPass){
+            if (isValidPass) {
                 return 1;
             }
-            
-            else{
+
+            else {
                 return 0;
-            }            
+            }
         }
 
-        else{
-            return 0;            
+        else {
+            return 0;
         }
     }
 
     //-----Instructor Forget Pin-----//
-    async forgetpin(instructor: ForgetPin){
-        let user = await this.instructorRepo.findOneBy({email: instructor.email});
+    async forgetpin(instructor: ForgetPin) {
+        let user = await this.instructorRepo.findOneBy({ email: instructor.email });
 
-        if(user){
+        if (user) {
             this.id = user.id;
             this.name = user.instructorname;
             this.pin = Math.floor(Math.random() * 100000);
@@ -108,33 +107,33 @@ export class InstructorService{
             return "Varification Code Sent to this " + instructor.email + " Email!"
         }
 
-        else{
+        else {
             return instructor.email + " Email Not Found!"
         }
     }
 
     //-----Instructor Verify Pin-----//
-    async verifypin(instructor: VerifyPin){
+    async verifypin(instructor: VerifyPin) {
         let isValid = false;
-        if(instructor.pin == this.pin){
+        if (instructor.pin == this.pin) {
             isValid = true;
         }
 
-        if(isValid){
+        if (isValid) {
             const passhash = await bcrypt.genSalt();
             instructor.password = await bcrypt.hash(instructor.password, passhash);
-            this.instructorRepo.update(this.id, {password: instructor.password});
+            this.instructorRepo.update(this.id, { password: instructor.password });
             this.pin = null;
             return "Password Successfully Changed!"
         }
 
-        else{
+        else {
             return "Invalid Pin Entered!"
         }
     }
 
     //-----Instructor Dashboard-----//
-    async getDashboard(): Promise<any>{
+    async getDashboard(): Promise<any> {
         const instructorcount = await this.instructorRepo.count({});
         const studentcount = await this.studentRepo.count({})
         return `Welcome To GraspWay\n\nInstructor Dashboard:
@@ -143,17 +142,17 @@ export class InstructorService{
     }
 
     //-----Instructor Edit Partial Information-----//
-    async editInfoByID(instructordto: EditInfo, id: number): Promise<any>{
+    async editInfoByID(instructordto: EditInfo, id: number): Promise<any> {
         const { email, phonenumber } = instructordto;
 
         const updateResult = await this.instructorRepo.update({ id }, { email, phonenumber });
-        
-        if(updateResult.affected > 0){
+
+        if (updateResult.affected > 0) {
             return `Instructor Information Updated:
             Email: [${instructordto.email}]
             PhoneNumber: [${instructordto.phonenumber}]`;
         }
-        else{
+        else {
             return `Instructor Information Didn't Updated.`
         }
     }
@@ -161,91 +160,91 @@ export class InstructorService{
     //-----Instructor Profile Update-----//
     async updateInstructorByID(instructordto: InstructorEdit, id: number): Promise<any> {
         let isVliad = false;
-        if(isVliad == false){
+        if (isVliad == false) {
             const passhash = await bcrypt.genSalt();
             instructordto.password = await bcrypt.hash(instructordto.password, passhash);
             isVliad = true;
 
-            if(isVliad == true){
+            if (isVliad == true) {
                 this.instructorRepo.update(id, instructordto);
-                return this.instructorRepo.findOneBy({id: id});
+                return this.instructorRepo.findOneBy({ id: id });
             }
         }
-        
-        else{
+
+        else {
             return `Instructor Information Didn't Updated.`;
         }
-        
+
     }
 
     //-----Instructor Password Reset-----//
-    async resetPasswordByID(instructordto: ResetPassword, id: number): Promise<any>{
+    async resetPasswordByID(instructordto: ResetPassword, id: number): Promise<any> {
         let isVliad = false;
 
-        if(isVliad == false){
+        if (isVliad == false) {
             const passhash = await bcrypt.genSalt();
             instructordto.password = await bcrypt.hash(instructordto.password, passhash);
             isVliad = true;
 
-            if(isVliad == true){
-                this.instructorRepo.update(id, {password: instructordto.password});
+            if (isVliad == true) {
+                this.instructorRepo.update(id, { password: instructordto.password });
                 return `Instructor Password Successflly Changed!`;
             }
         }
-        
-        else{
+
+        else {
             return `Instructor Password Didn't Changed.`;
         }
     }
 
     //-----Instructor Search By ID-----//
-    async searchInstructorByID(id): Promise<any>{
-        const data = this.instructorRepo.findOneBy({id});
+    async searchInstructorByID(id): Promise<any> {
+        const data = this.instructorRepo.findOneBy({ id });
         return data;
     }
 
-    
+
 
     //-----Show Al Student-----//
-    getStudents(){
+    getStudents() {
         return this.studentRepo.find();
     }
 
     //-----Approve Student Request for Purchese Course-----//
-    approveStudentinCourse(id: any): any{
-        return this.coursestudentRepo.update(id, {status: true});
+    approveStudentinCourse(id: any): any {
+        return this.coursestudentRepo.update(id, { status: true });
     }
 
     //-----Reject Student Request for Purchese Course-----//
-    async rejectStudentByInstructor(id: any): Promise<any>{
+    async rejectStudentByInstructor(id: any): Promise<any> {
         const user = await this.coursestudentRepo.findOne({
             where: {
                 status: false,
                 id: id
             }
         })
-        if(user){
-            return this.coursestudentRepo.delete(id);        
+        if (user) {
+            return this.coursestudentRepo.delete(id);
         }
-        else{
+        else {
             return "Student Not Found!"
         }
     }
 
     //-----Search Student By ID-----//
-    async getStudentByID(id: any){
-        const data = await this.studentRepo.findOne({ where: {id: id} });
-        if(data){
+    async getStudentByID(id: any) {
+        const data = await this.studentRepo.findOne({ where: { id: id } });
+        if (data) {
             return data;
         }
-        else{
+        else {
             return "Student Not Found!"
         }
     }
 
 
     //-----Find Student By Course ID-----//
-    getStudentsByCourseID(id: any): any{
+    getStudentsByCourseID(id: any): any {
         // return this.coursestudentRepo.find({
         //     select: {
         //         student: true
@@ -276,9 +275,9 @@ export class InstructorService{
             //     student: true
             // },
             where: {
-              course: id, 
-              status: true
-            }, 
+                course: id,
+                status: true
+            },
             relations: {
                 student: true
             }
@@ -286,27 +285,27 @@ export class InstructorService{
     }
 
     //-----Delete Instructor-----//
-    async deleteInstructorByID(id: any): Promise<any>{
+    async deleteInstructorByID(id: any): Promise<any> {
         const user = await this.instructorRepo.findOne({
-            where: {id: id}
+            where: { id: id }
         })
-        if(user){
+        if (user) {
             this.instructorRepo.delete(id);
             return user.instructorname + " Instructor Deleted Successfuly!";
         }
-        else{
-            throw new UnauthorizedException({message: "Instrutor Not Found!"})
+        else {
+            throw new UnauthorizedException({ message: "Instrutor Not Found!" })
         }
     }
-    
-    
-        
+
+
+
 
     //-----Instructor Insert Course-----//
-    async insertCourse(instructordto: Course):Promise<any>{
-        const course = new CourseEntity ()
+    async insertCourse(instructordto: Course): Promise<any> {
+        const course = new CourseEntity()
         course.coursename = instructordto.coursename;
-        
+
         //course.catagory.id = instructordto.catagoryID;
 
         const instructor = await this.instructorRepo.findOne({
@@ -321,7 +320,7 @@ export class InstructorService{
             select: {
                 id: true
             },
-            where:{
+            where: {
                 id: instructordto.catagoryID
             }
         })
@@ -332,15 +331,15 @@ export class InstructorService{
 
         const isValid = await this.courseRepo.findOne({
             where: {
-                coursename: course.coursename                
+                coursename: course.coursename
             }
         })
-        if(!isValid){
+        if (!isValid) {
             return await this.courseRepo.save(course);
         }
-        else{
-            throw new UnauthorizedException({message: "Course Already Exist!"});
-        }        
+        else {
+            throw new UnauthorizedException({ message: "Course Already Exist!" });
+        }
     }
 
     //-----Instructor File Upload-----//
@@ -348,7 +347,7 @@ export class InstructorService{
         const filename = new CourseContentEntity();
         filename.name = fileuploaddto.filename;
         filename.status = false;
-        const course = await this.courseRepo.findOne({ 
+        const course = await this.courseRepo.findOne({
             select: {
                 id: true
             },
@@ -359,11 +358,11 @@ export class InstructorService{
         if (!course) {
             throw new UnauthorizedException(`Could not find course with id ${fileuploaddto.id}`);
         }
-        else{
+        else {
             filename.course = course;
             return await this.contentRepo.save(filename);
         }
-        
+
     }
 
     //-----Delete Course Content-----//
@@ -372,34 +371,34 @@ export class InstructorService{
             where: { id: id }
         })
 
-        if(user){
+        if (user) {
             const data = this.contentRepo.delete(id);
             return "Course Content Deleted!";
         }
-        else{
-            throw new UnauthorizedException({message: "Content Not Found!"});
+        else {
+            throw new UnauthorizedException({ message: "Content Not Found!" });
         }
-            
+
     }
 
     //-----Instructor Provide Certificate-----//
     async getCertificateByID(id: any): Promise<any> {
-        const data = await this.studentRepo.findOne({ where: {id: id} });
+        const data = await this.studentRepo.findOne({ where: { id: id } });
 
-        if(data){
-            try{
+        if (data) {
+            try {
                 return new Promise<string>((resolve, reject) => {
                     const doc = new PDFDocument();
-        
+
                     doc.image('./Image/Logo.png', { fit: [250, 300], align: 'center' });
-        
+
                     doc.fontSize(16).text(`\nWelcome To GraspWay\nCongratulation For Completing the Course.\nUser ID_${id}`, { align: 'center' });
-        
+
                     const filename = `Certificate/certificate_${id}.pdf`;
                     const writeStream = fs.createWriteStream(filename);
                     doc.pipe(writeStream);
                     doc.end();
-                    
+
                     writeStream.on('finish', () => {
                         resolve(filename);
                     });
@@ -408,12 +407,12 @@ export class InstructorService{
                     });
                 });
             }
-            catch{
-                throw new UnauthorizedException({message: "Student Not Found!"});
-            }            
+            catch {
+                throw new UnauthorizedException({ message: "Student Not Found!" });
+            }
         }
-        else{
+        else {
             return "Student ID Not Found!"
-        }        
+        }
     }
 }

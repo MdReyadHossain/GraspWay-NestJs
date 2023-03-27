@@ -14,10 +14,10 @@ export class AdminEntity {
 
     @Column()
     address: string;
-    
+
     @Column()
     phoneNo: string;
-    
+
     @Column()
     email: string;
 
