@@ -58,13 +58,13 @@ export class AdminService {
 
         try {
             if (admin.password == user.password)
-                return 1;
+                return user;
 
             else {
                 const isValid = await bcrypt.compare(admin.password, user.password);
 
                 if (isValid)
-                    return 1;
+                    return user;
 
                 else if (!isValid)
                     return 0;
@@ -152,17 +152,26 @@ export class AdminService {
 
         try {
             if (user) {
-                const salt = await bcrypt.genSalt();
-                admin.password = await bcrypt.hash(admin.password, salt);
+                const isValid = await bcrypt.compare(admin.oldPassword, user.password);
+                const isSame = admin.oldPassword !== admin.password;
+                if (isValid && isSame) {
+                    const salt = await bcrypt.genSalt();
+                    admin.password = await bcrypt.hash(admin.password, salt);
+                    this.adminRepo.update(id, { password: admin.password })
+                    return "Password reseted!";
+                }
 
-                console.log(this.adminRepo.update(id, { password: admin.password }));
-                return "Password reseted!";
+                else if (!isSame)
+                    return "Old Password and New Password should not be same!";
+
+                else
+                    return "Old Password got wrong!";
             }
             else
-                throw new UnauthorizedException("ID not found");
+                throw new UnauthorizedException("Admin not found");
         }
         catch {
-            throw new UnauthorizedException("ID not found");
+            throw new UnauthorizedException("Admin not found");
         }
     }
 

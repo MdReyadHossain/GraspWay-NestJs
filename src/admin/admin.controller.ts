@@ -6,6 +6,7 @@ import { AdminService } from "./admin.service";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
+import { AdminEntity } from "./admin.entity";
 
 @Controller("/admin")
 export class AdminController {
@@ -43,9 +44,15 @@ export class AdminController {
         @Session() session,
         @Body() admin: AdminLogin
     ) {
-        // return this.adminservice.loginAdmin(admin);
-        if (await this.adminservice.loginAdmin(admin)) {
-            session.name = admin.name;
+        let user = await this.adminservice.loginAdmin(admin);
+        if (typeof user !== "number") {
+            session.Id = user.id;
+            session.name = user.name;
+            session.address = user.address;
+            session.email = user.email;
+            session.joiningYear = user.joiningYear;
+            session.phoneNo = user.phoneNo;
+
             return { message: "Login Succesful!" };
         }
         else {
@@ -108,10 +115,10 @@ export class AdminController {
     @Patch("/resetPassword/")
     @UseGuards(AdminSessionGuard)
     resetPassword(
-        @Body('id', ParseIntPipe) id: number,
+        @Session() session,
         @Body() admin: AdminProfile
     ): any {
-        return this.adminservice.resetPassword(id, admin);
+        return this.adminservice.resetPassword(session.Id, admin);
     }
 
     @Get("/searchAdmin/:id")
@@ -120,10 +127,12 @@ export class AdminController {
         return this.adminservice.getAdminByid(id);
     }
 
-    @Delete("/deleteAdmin/:id")
+    @Delete("/deleteAdmin/")
     @UseGuards(AdminSessionGuard)
-    deleteAdminbyID(@Param('id', ParseIntPipe) id: any): any {
-        return this.adminservice.deleteAdminByID(id);
+    deleteAdminbyID(
+        @Session() session,
+    ): any {
+        return this.adminservice.deleteAdminByID(session.Id);
     }
 
     @Get('/logout')

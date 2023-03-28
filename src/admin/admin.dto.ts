@@ -41,6 +41,8 @@ export class AdminProfile {
     joiningYear: string;
 
     adminImage: string;
+
+    oldPassword: string;
 }
 
 

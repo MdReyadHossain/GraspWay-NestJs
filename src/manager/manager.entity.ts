@@ -1,5 +1,5 @@
 import { AdminEntity } from "src/admin/admin.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("Managers")
 export class ManagerEntity {
@@ -24,6 +24,7 @@ export class ManagerEntity {
     @Column()
     status: boolean;
 
-    @ManyToOne(() => AdminEntity, (admin) => admin.manager)
+    @ManyToOne(() => AdminEntity, (admin) => admin.manager, { onDelete: 'CASCADE' })
+    @JoinColumn()
     admin: AdminEntity;
 }
