@@ -252,18 +252,26 @@ export class InstructorService {
         //                 (select courseid from coursestudent group by courseid 
         //                     having courseid = 4))
 
-        const student = await this.coursestudentRepo
-            .createQueryBuilder('cs')
-            .select('cs.studentId')
-            .where((course) => {
-                const subqury = course
+        const student = await this.studentRepo
+            .createQueryBuilder('s')
+            .select('s.studentname')
+            .where((sid) => {
+                const subqury0 = sid
                     .subQuery()
-                    .select('cs.courseId')
+                    .select('cs.studentId')
                     .from(CourseStudentEntity, 'cs')
-                    .groupBy('cs.courseId')
-                    .having('cs.courseId = :id', { id: id })
+                    .where((course) => {
+                        const subqury1 = course
+                            .subQuery()
+                            .select('cs.courseId')
+                            .from(CourseStudentEntity, 'cs')
+                            .groupBy('cs.courseId')
+                            .having('cs.courseId = :id', { id: id })
+                            .getQuery();
+                        return 'cs.courseId IN ' + subqury1;
+                    })
                     .getQuery();
-                return 'cs.courseId IN ' + subqury;
+                return 's.id IN ' + subqury0;
             })
             .getRawMany();
 
