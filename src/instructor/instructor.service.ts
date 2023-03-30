@@ -1,7 +1,7 @@
 import * as bcrypt from "bcrypt";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { createQueryBuilder, Repository } from "typeorm";
 import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogin, InstructorReg, ResetPassword, VerifyPin } from "./instructor.dto";
 import { InstructorEntity } from "./instructor.entity";
 import { Subject } from "rxjs";
@@ -244,44 +244,30 @@ export class InstructorService {
 
 
     //-----Find Student By Course ID-----//
-    getStudentsByCourseID(id: any): any {
-        // return this.coursestudentRepo.find({
-        //     select: {
-        //         student: true
-        //     },
-        //     where: {
-        //         course: id, 
-        //         status: true
-        //     }, 
-        //     relations: {
-        //         student: true
-        //     }
-        // });
+    async getStudentsByCourseID(id: any) {
+        // select studentname from student 
+        //     where id in 
+        //         (select studentid from coursestudent 
+        //             where courseid in 
+        //                 (select courseid from coursestudent group by courseid 
+        //                     having courseid = 4))
 
-        // return this.coursestudentRepo.find({
-        //     select: ['id'],
-        //     where: {
-        //       course: id, 
-        //       status: true
-        //     }, 
-        //     relations: {
-        //         course: true,
-        //         student: true
-        //     }
-        //   });
+        const student = await this.coursestudentRepo
+            .createQueryBuilder('cs')
+            .select('cs.studentId')
+            .where((course) => {
+                const subqury = course
+                    .subQuery()
+                    .select('cs.courseId')
+                    .from(CourseStudentEntity, 'cs')
+                    .groupBy('cs.courseId')
+                    .having('cs.courseId = :id', { id: id })
+                    .getQuery();
+                return 'cs.courseId IN ' + subqury;
+            })
+            .getRawMany();
 
-        return this.coursestudentRepo.find({
-            // select: {
-            //     student: true
-            // },
-            where: {
-                course: id,
-                status: true
-            },
-            relations: {
-                student: true
-            }
-        });
+        return student;
     }
 
     //-----Delete Instructor-----//

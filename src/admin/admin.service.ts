@@ -2,7 +2,7 @@ import * as bcrypt from "bcrypt";
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { EntityRepository, getConnection, getRepository, Repository } from "typeorm";
 import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminEntity } from "./admin.entity";
 import { InstructorEntity } from "src/instructor/instructor.entity";
@@ -133,6 +133,20 @@ export class AdminService {
                 Student: ${student}`;
     }
 
+    async getAdminprofile(id: any) {
+        const admin = await this.adminRepo
+            .createQueryBuilder("admin")
+            .select('admin.name')
+            .addSelect('admin.email')
+            .addSelect('admin.address')
+            .addSelect('admin.phoneNo')
+            .addSelect('admin.joiningYear')
+            .where('admin.id = :id', { id: id })
+            .getOne();
+
+        return admin;
+    }
+
 
     async editProfile(id: number, admin: AdminProfile) {
         const salt = await bcrypt.genSalt();
@@ -154,6 +168,7 @@ export class AdminService {
             if (user) {
                 const isValid = await bcrypt.compare(admin.oldPassword, user.password);
                 const isSame = admin.oldPassword !== admin.password;
+
                 if (isValid && isSame) {
                     const salt = await bcrypt.genSalt();
                     admin.password = await bcrypt.hash(admin.password, salt);

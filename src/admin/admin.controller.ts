@@ -84,6 +84,12 @@ export class AdminController {
         return this.adminservice.getDashboard();
     }
 
+    @Get("/profile/")
+    @UseGuards(AdminSessionGuard)
+    getAdminprofile(@Session() session): any {
+        return this.adminservice.getAdminprofile(session.Id);
+    }
+
     // edit profile with admin parameter
     @Put("/editProfile/")
     @UseGuards(AdminSessionGuard)
