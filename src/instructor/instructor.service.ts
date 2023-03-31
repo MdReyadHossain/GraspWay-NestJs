@@ -141,6 +141,15 @@ export class InstructorService {
         Student: [${studentcount}]`;
     }
 
+    async getProfile(id: any) {
+        const instruct = await this.instructorRepo
+            .createQueryBuilder('ins')
+            .where('id = :insid', { insid: id })
+            .getOne();
+
+        return instruct;
+    }
+
     //-----Instructor Edit Partial Information-----//
     async editInfoByID(instructordto: EditInfo, id: number): Promise<any> {
         const { email, phonenumber } = instructordto;

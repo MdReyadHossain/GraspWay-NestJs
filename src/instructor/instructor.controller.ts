@@ -59,6 +59,12 @@ export class InstructorController {
         return this.instructorservice.getDashboard();
     }
 
+    @Get("/profile/:id")
+    // @UseGuards(InstructorSessionGuard)
+    getProfile(@Param('id', ParseIntPipe) id: any): any {
+        return this.instructorservice.getProfile(id);
+    }
+
     //-----Instructor Edit Profile-----//
     @Patch("/editinstructorinfo/:id")
     @UseGuards(InstructorSessionGuard)
