@@ -4,7 +4,7 @@ export class ManagerLogin {
     @IsNotEmpty({ message: "Name should not be empty" })
     @IsString({ message: "Name should not be character" })
     @Length(4, 16, { message: "Input should be between 4 and 16 characters in length" })
-    name: string;
+    manager_name: string;
     phoneNo: any;
     email: any;
     address: any;
@@ -16,7 +16,7 @@ export class ManagerProfile {
     @IsNotEmpty({ message: "Enter Your Name." })
     @Length(3, 10, { message: "Name Length Should be 3 to 10 Character." })
     @IsString({ message: "Name Should be String." })
-    name: string;
+    manager_name: string;
 
     @IsNotEmpty({ message: "Enter Your Email." })
     @IsEmail()

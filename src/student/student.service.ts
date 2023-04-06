@@ -18,7 +18,7 @@ export class StudentService {
     //-----Instructor Registration-----//
     async registration(student: Studentinfo): Promise<any> {
         const studentaccount = new StudentEntity();
-        studentaccount.studentname = student.studentname;
+        studentaccount.student_name = student.student_name;
         studentaccount.password = student.password;
         studentaccount.phonenumber = student.phonenumber;
         studentaccount.email = student.email;

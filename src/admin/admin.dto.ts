@@ -5,7 +5,7 @@ export class AdminLogin {
     @IsNotEmpty({ message: "Name should not be empty!" })
     @IsString({ message: "Name should not be character!" })
     @Length(4, 8, { message: "Input should be between 4 and 8 characters in length!" })
-    name: string;
+    admin_name: string;
 
     @IsNotEmpty({ message: "Password should not be empty!" })
     @IsString({ message: "Password should not be character!" })
@@ -18,7 +18,7 @@ export class AdminProfile {
     @IsNotEmpty({ message: "Name should not be empty!" })
     @IsString({ message: "Name should not be character!" })
     @Length(4, 8, { message: "Input should be between 4 and 8 characters in length!" })
-    name: string;
+    admin_name: string;
 
     @IsNotEmpty({ message: "Password should not be empty!" })
     @IsString({ message: "Password should not be character!" })

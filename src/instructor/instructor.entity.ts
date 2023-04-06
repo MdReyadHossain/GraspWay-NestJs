@@ -7,7 +7,7 @@ export class InstructorEntity {
     id: number;
 
     @Column()
-    instructorname: string;
+    instructor_name: string;
 
     @Column()
     password: string;

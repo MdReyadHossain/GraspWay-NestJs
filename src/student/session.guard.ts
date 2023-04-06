@@ -2,9 +2,9 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
 
 @Injectable()
-export class ManagerSessionGuard implements CanActivate {
+export class StudentSessionGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
-        return request.session.manager_name !== undefined;
+        return request.session.student_name !== undefined;
     }
 }

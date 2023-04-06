@@ -5,6 +5,6 @@ import { Observable } from "rxjs";
 export class InstructorSessionGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
-        return request.session.instructorname !== undefined;
+        return request.session.instructor_name !== undefined;
     }
 }

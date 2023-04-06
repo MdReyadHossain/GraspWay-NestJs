@@ -5,6 +5,6 @@ import { Observable } from "rxjs";
 export class AdminSessionGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
-        return request.session.name !== undefined;
+        return request.session.admin_name !== undefined;
     }
 }

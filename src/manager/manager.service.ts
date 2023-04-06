@@ -26,7 +26,7 @@ export class ManagerService {
     // registration for manager (in)
     async registration(manager: ManagerProfile) {
         const manageraccount = new ManagerEntity();
-        manageraccount.name = manager.name;
+        manageraccount.manager_name = manager.manager_name;
         manageraccount.password = manager.password;
         manageraccount.phonenumber = manager.phonenumber;
         manageraccount.email = manager.email;
@@ -36,7 +36,7 @@ export class ManagerService {
         const salt = await bcrypt.genSalt();
         manageraccount.password = await bcrypt.hash(manager.password, salt);
 
-        const isValidName = await this.managerRepo.findOneBy({ name: manager.name });
+        const isValidName = await this.managerRepo.findOneBy({ manager_name: manager.manager_name });
         const isValidEmail = await this.managerRepo.findOneBy({ email: manager.email });
 
         if (!isValidName && !isValidEmail) {
@@ -63,7 +63,7 @@ export class ManagerService {
     // login to manager
     async loginManager(manager: ManagerLogin) {
         const user = await this.managerRepo.findOneBy({
-            name: manager.name
+            manager_name: manager.manager_name
         });
 
         try {

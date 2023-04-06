@@ -10,10 +10,18 @@ import { CatagroyModule } from './Entities/Catagory/catagory.module';
 import { ManagerModule } from './manager/manager.module';
 import { CourseStudentModule } from './Entities/CourseStudent/coursestudent.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { AdminEntity } from './admin/admin.entity';
+import { InstructorEntity } from './instructor/instructor.entity';
+import { ManagerEntity } from './manager/manager.entity';
+import { StudentEntity } from './student/student.entity';
+import { CourseEntity } from './Entities/Course/course.entity';
+import { CatagoryEntity } from './Entities/Catagory/catagory.entity';
 
 
 @Module({
-    imports: [InstructorModule,
+    imports: [
+        TypeOrmModule.forFeature([AdminEntity, ManagerEntity, InstructorEntity, StudentEntity, CourseEntity, CatagoryEntity]),
+        InstructorModule,
         AdminModule,
         StudentModule,
         ManagerModule,

@@ -29,7 +29,7 @@ export class AdminService {
 
     async addAdmin(admin: AdminProfile) {
         const adminaccount = new AdminEntity();
-        adminaccount.name = admin.name;
+        adminaccount.admin_name = admin.admin_name;
         adminaccount.phoneNo = admin.phoneNo;
         adminaccount.email = admin.email;
         adminaccount.address = admin.address;
@@ -39,7 +39,7 @@ export class AdminService {
         const salt = await bcrypt.genSalt();
         adminaccount.password = await bcrypt.hash(admin.password, salt);
 
-        const isValidName = await this.adminRepo.findOneBy({ name: admin.name });
+        const isValidName = await this.adminRepo.findOneBy({ admin_name: admin.admin_name });
         const isValidEmail = await this.adminRepo.findOneBy({ email: admin.email });
 
         if (!isValidName && !isValidEmail) {
@@ -53,25 +53,25 @@ export class AdminService {
 
     async loginAdmin(admin: AdminLogin) {
         const user = await this.adminRepo.findOneBy({
-            name: admin.name
+            admin_name: admin.admin_name
         });
 
         try {
             if (admin.password == user.password)
-                return user;
+                return { isLogin: true, user: user };
 
             else {
                 const isValid = await bcrypt.compare(admin.password, user.password);
 
                 if (isValid)
-                    return user;
+                    return { isLogin: true, user: user };
 
                 else if (!isValid)
-                    return 0;
+                    return { isLogin: false };
             }
         }
         catch {
-            return 0;
+            return { isLogin: false };
         }
     }
 
@@ -380,6 +380,24 @@ export class AdminService {
 
 
     // ------------------- Website Related service [Start] ---------------------//
+
+    getCatagory(catagoryOrder: any): any {
+        if (catagoryOrder == "" || catagoryOrder == "ASC")
+            return this.catagoryRepo.find({
+                order: {
+                    Catagoryname: "ASC"
+                }
+            });
+
+        else if (catagoryOrder === "DESC") {
+            return this.catagoryRepo.find({
+                order: {
+                    Catagoryname: "DESC"
+                }
+            });
+        }
+        return this.catagoryRepo.find();
+    }
 
     addCatagory(cat: AdminCatagory): any {
         const catag = new CatagoryEntity()

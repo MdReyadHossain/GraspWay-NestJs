@@ -27,8 +27,8 @@ export class InstructorController {
     @UsePipes(new ValidationPipe())
     async login(@Body() instructordto: InstructorLogin, @Session() session) {
         if (await this.instructorservice.login(instructordto)) {
-            session.instructorname = instructordto.instructorname;
-            return session.instructorname + " Login Successfull!";
+            session.instructor_name = instructordto.instructor_name;
+            return session.instructor_name + " Login Successfull!";
         }
 
         else {
@@ -163,7 +163,7 @@ export class InstructorController {
     @Post('/uploadfile')
     @UseInterceptors(FileInterceptor('myfile', {
         storage: diskStorage({
-            destination: './Uploaded File',
+            destination: './data/uploadedfile',
             filename: function (req, file, cb) {
                 cb(null, Date.now() + "_Instructor" + file.originalname)
             }

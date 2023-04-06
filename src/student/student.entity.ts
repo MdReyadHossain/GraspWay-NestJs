@@ -7,7 +7,7 @@ export class StudentEntity {
     id: number;
 
     @Column()
-    studentname: string;
+    student_name: string;
 
     @Column()
     password: string;

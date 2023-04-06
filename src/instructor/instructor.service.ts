@@ -38,7 +38,7 @@ export class InstructorService {
     //-----Instructor Registration-----//
     async registration(instructor: InstructorReg): Promise<any> {
         const instructoraccount = new InstructorEntity();
-        instructoraccount.instructorname = instructor.instructorname;
+        instructoraccount.instructor_name = instructor.instructor_name;
         instructoraccount.phonenumber = instructor.phonenumber;
         instructoraccount.email = instructor.email;
         instructoraccount.dob = instructor.dob;
@@ -47,17 +47,17 @@ export class InstructorService {
         const passhash = await bcrypt.genSalt();
         instructoraccount.password = await bcrypt.hash(instructor.password, passhash);
 
-        const isValidName = await this.instructorRepo.findOneBy({ instructorname: instructor.instructorname });
+        const isValidName = await this.instructorRepo.findOneBy({ instructor_name: instructor.instructor_name });
         const isValidEmail = await this.instructorRepo.findOneBy({ email: instructor.email });
 
         if (!isValidName && !isValidEmail) {
             await this.instructorRepo.save(instructoraccount);
-            return "Instructor Name : " + instructoraccount.instructorname + " Successfully Added!!"
+            return "Instructor Name : " + instructoraccount.instructor_name + " Successfully Added!!"
         }
 
         else {
             if (isValidName) {
-                return instructoraccount.instructorname + " Instructor Name Already Registered!"
+                return instructoraccount.instructor_name + " Instructor Name Already Registered!"
             }
             if (isValidEmail) {
                 return instructoraccount.email + " Email Already Registered!"
@@ -67,7 +67,7 @@ export class InstructorService {
 
     //-----Instructor Login-----//
     async login(instructor: InstructorLogin) {
-        const name = await this.instructorRepo.findOneBy({ instructorname: instructor.instructorname });
+        const name = await this.instructorRepo.findOneBy({ instructor_name: instructor.instructor_name });
 
         if (name) {
             const isValidPass = await bcrypt.compare(instructor.password, name.password);
@@ -91,7 +91,7 @@ export class InstructorService {
 
         if (user) {
             this.id = user.id;
-            this.name = user.instructorname;
+            this.name = user.instructor_name;
             this.pin = Math.floor(Math.random() * 100000);
 
             await this.mailerService.sendMail({
@@ -294,7 +294,7 @@ export class InstructorService {
         })
         if (user) {
             this.instructorRepo.delete(id);
-            return user.instructorname + " Instructor Deleted Successfuly!";
+            return user.instructor_name + " Instructor Deleted Successfuly!";
         }
         else {
             throw new UnauthorizedException({ message: "Instrutor Not Found!" })
@@ -397,7 +397,7 @@ export class InstructorService {
 
                     doc.fontSize(16).text(`\nWelcome To GraspWay\nCongratulation For Completing the Course.\nUser ID_${id}`, { align: 'center' });
 
-                    const filename = `Certificate/certificate_${id}.pdf`;
+                    const filename = `./data/certificates/${data.id}_certificate_${id}.pdf`;
                     const writeStream = fs.createWriteStream(filename);
                     doc.pipe(writeStream);
                     doc.end();

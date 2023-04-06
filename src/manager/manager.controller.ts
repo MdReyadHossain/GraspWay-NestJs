@@ -23,7 +23,7 @@ export class ManagerController {
     ) {
         // return this.maanagerservice.loginManager(manager);
         if (await this.managerservice.loginManager(manager)) {
-            session.name = manager.name;
+            session.manager_name = manager.manager_name;
             return { message: "Login Succesful!" };
         }
         else {

@@ -45,13 +45,13 @@ export class AdminController {
         @Body() admin: AdminLogin
     ) {
         let user = await this.adminservice.loginAdmin(admin);
-        if (typeof user !== "number") {
-            session.Id = user.id;
-            session.name = user.name;
-            session.address = user.address;
-            session.email = user.email;
-            session.joiningYear = user.joiningYear;
-            session.phoneNo = user.phoneNo;
+        if (user.isLogin) {
+            session.Id = user.user.id;
+            session.admin_name = user.user.admin_name;
+            session.address = user.user.address;
+            session.email = user.user.email;
+            session.joiningYear = user.user.joiningYear;
+            session.phoneNo = user.user.phoneNo;
 
             return { message: "Login Succesful!" };
         }
@@ -96,7 +96,7 @@ export class AdminController {
     @UsePipes(new ValidationPipe())
     @UseInterceptors(FileInterceptor('adminImage', {
         storage: diskStorage({
-            destination: './files',
+            destination: './data/admin/profilePictures',
             filename: function (_req, file, cb) {
                 cb(null, Date.now() + "_" + file.originalname)
             }
@@ -279,6 +279,14 @@ export class AdminController {
 
 
     // ------------------- Website Related Routes [Start] ---------------------//
+
+    @Get("/catagory?")
+    @UsePipes(new ValidationPipe())
+    getCatagory(
+        @Query("order") ordr: any
+    ): any {
+        return this.adminservice.getCatagory(ordr);
+    }
 
     @Post('/addCatagory')
     @UsePipes(new ValidationPipe())

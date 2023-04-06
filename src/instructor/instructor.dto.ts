@@ -6,7 +6,7 @@ export class InstructorReg {
     @IsNotEmpty({ message: "Instructor Name Can't be Empty." })
     @MinLength(5, { message: "Instructor Name Must be Greater Than 5 Character." })
     @MaxLength(50, { message: "Instructor Name Must be Less Than 50 Character." })
-    instructorname: string;
+    instructor_name: string;
 
     @IsNotEmpty({ message: "Enter Your Email." })
     @IsEmail()
@@ -32,7 +32,7 @@ export class InstructorLogin {
     @MinLength(5, { message: "Instructor Name Must be Greater Than 5 Character." })
     @MaxLength(50, { message: "Instructor Name Must be Less Than 50 Character." })
     @IsAlpha()
-    instructorname: string;
+    instructor_name: string;
 
     @IsNotEmpty({ message: "Enter Your Password." })
     @MinLength(8, { message: "Password Must be Greater Than 8 Character." })
