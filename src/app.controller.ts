@@ -39,6 +39,7 @@ export class AppController {
                         session.email = user.admin.email;
                         session.joiningYear = user.admin.joiningYear;
                         session.phoneNo = user.admin.phoneNo;
+                        session.image = user.admin.adminImage;
                         break;
 
                     case 'manager':
@@ -66,16 +67,16 @@ export class AppController {
                         break;
 
                     default:
-                        return { message: "Username or Password Invalid!" };
+                        return { message: "Username or Password Invalid!", success: false };
                 }
-                return { message: "Login Successfull!" };
+                return { message: "Login Successfull!", success: true, user: user.data, session };
             }
             else {
-                return { message: "Username or Password Invalid!" };
+                return { message: "Username or Password Invalid!", success: false };
             }
         }
         catch {
-            return { message: "Username or Password Invalid!" };
+            return { message: "Username or Password Invalid!", success: false };
         }
     }
 }

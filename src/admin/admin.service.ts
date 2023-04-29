@@ -51,31 +51,6 @@ export class AdminService {
     }
 
 
-    async loginAdmin(admin: AdminLogin) {
-        const user = await this.adminRepo.findOneBy({
-            admin_name: admin.admin_name
-        });
-
-        try {
-            if (admin.password == user.password)
-                return { isLogin: true, user: user };
-
-            else {
-                const isValid = await bcrypt.compare(admin.password, user.password);
-
-                if (isValid)
-                    return { isLogin: true, user: user };
-
-                else if (!isValid)
-                    return { isLogin: false };
-            }
-        }
-        catch {
-            return { isLogin: false };
-        }
-    }
-
-
     async forgetPassword(acc: any) {
         let user = await this.adminRepo.findOneBy({
             email: acc.email
@@ -123,14 +98,10 @@ export class AdminService {
 
     async getDashboard(): Promise<any> {
         const admin = await this.adminRepo.count({});
-        const manager = await this.managerRepo.count({});
-        const instructor = await this.instructorRepo.count({});
+        const manager = await this.managerRepo.count({ where: { status: true } });
+        const instructor = await this.instructorRepo.count({ where: { status: true } });
         const student = await this.studentRepo.count({});
-        return `Admin Dashboard:\n
-                Admin: ${admin}
-                Manager: ${manager}
-                Instructor: ${instructor}
-                Student: ${student}`;
+        return { admin, manager, instructor, student };
     }
 
     async getAdminprofile(id: any) {

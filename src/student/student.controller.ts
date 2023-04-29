@@ -14,12 +14,6 @@ export class StudentController {
     registration(@Body() studentdto: Studentinfo): any {
         return this.studentservice.registration(studentdto);
     }
-    //-----Student Login-----//
-    @Post("/login")
-    @UsePipes(new ValidationPipe())
-    login(@Body() studentdto: StudentLogin): any {
-        return this.studentservice.login(studentdto);
-    }
 
     // //-----Student Forget Pin-----//
     // @Post("/forgetpin/")

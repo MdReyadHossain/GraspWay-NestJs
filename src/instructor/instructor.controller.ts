@@ -22,20 +22,6 @@ export class InstructorController {
         return this.instructorservice.registration(instructordto);
     }
 
-    //-----Instructor Login-----//
-    @Post("/login")
-    @UsePipes(new ValidationPipe())
-    async login(@Body() instructordto: InstructorLogin, @Session() session) {
-        if (await this.instructorservice.login(instructordto)) {
-            session.instructor_name = instructordto.instructor_name;
-            return session.instructor_name + " Login Successfull!";
-        }
-
-        else {
-            return `Invalid Instructor Name or Password.`;
-        }
-    }
-
     //-----Instructor Forget Pin-----//
     @Post("/forgetpin/")
     forgetpin(@Body() instructordto: ForgetPin): any {
@@ -190,10 +176,14 @@ export class InstructorController {
 
 
     //-----Certification-----//
-    @Get("/certificate/:id")
-    async getCertificateByID(@Res() res, @Param('id') id: any) {
+    @Get("/certificate?")
+    async getCertificateByID(
+        @Session() session,
+        @Res() res,
+        @Query('course') course: any
+    ) {
         try {
-            const filename = await this.instructorservice.getCertificateByID(id);
+            const filename = await this.instructorservice.getCertificateByID(session.id, course);
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${filename}`);

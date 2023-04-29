@@ -1,5 +1,5 @@
 import { FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards } from "@nestjs/common/decorators";
+import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards, Res } from "@nestjs/common/decorators";
 import { AdminSessionGuard } from "./session.guard";
 import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminService } from "./admin.service";
@@ -16,7 +16,7 @@ export class AdminController {
     @UsePipes(new ValidationPipe())
     @UseInterceptors(FileInterceptor('adminImage', {
         storage: diskStorage({
-            destination: './files',
+            destination: './data/admin/ProfilePictures',
             filename: function (req, file, cb) {
                 cb(null, Date.now() + "_" + file.originalname)
             }
@@ -35,29 +35,6 @@ export class AdminController {
         console.log(adminImage);
         admin.adminImage = adminImage.filename;
         return this.adminservice.addAdmin(admin);
-    }
-
-    // login to dashboard
-    @Post("/login")
-    @UsePipes(new ValidationPipe())
-    async loginAdmin(
-        @Session() session,
-        @Body() admin: AdminLogin
-    ) {
-        let user = await this.adminservice.loginAdmin(admin);
-        if (user.isLogin) {
-            session.Id = user.user.id;
-            session.admin_name = user.user.admin_name;
-            session.address = user.user.address;
-            session.email = user.user.email;
-            session.joiningYear = user.user.joiningYear;
-            session.phoneNo = user.user.phoneNo;
-
-            return { message: "Login Succesful!" };
-        }
-        else {
-            return { message: "Username or Password Invalid!" };
-        }
     }
 
     // pin sent to email with smtp service
@@ -82,6 +59,11 @@ export class AdminController {
     @UseGuards(AdminSessionGuard)
     getdashboard(): any {
         return this.adminservice.getDashboard();
+    }
+
+    @Get('/getimage/:name')
+    getImages(@Param('name') name, @Res() res) {
+        res.sendFile(name, { root: './data/admin/ProfilePictures' });
     }
 
     @Get("/profile/")

@@ -7,7 +7,6 @@ export class StudentLogin {
 }
 
 export class Studentinfo {
-
     @IsNotEmpty({ message: "Student Name Can't be Empty." })
     @MinLength(5, { message: "Student Name Must be Greater Than 5 Character." })
     @MaxLength(50, { message: "Student Name Must be Less Than 50 Character." })

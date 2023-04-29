@@ -65,26 +65,6 @@ export class InstructorService {
         }
     }
 
-    //-----Instructor Login-----//
-    async login(instructor: InstructorLogin) {
-        const name = await this.instructorRepo.findOneBy({ instructor_name: instructor.instructor_name });
-
-        if (name) {
-            const isValidPass = await bcrypt.compare(instructor.password, name.password);
-            if (isValidPass) {
-                return 1;
-            }
-
-            else {
-                return 0;
-            }
-        }
-
-        else {
-            return 0;
-        }
-    }
-
     //-----Instructor Forget Pin-----//
     async forgetpin(instructor: ForgetPin) {
         let user = await this.instructorRepo.findOneBy({ email: instructor.email });
@@ -385,15 +365,21 @@ export class InstructorService {
     }
 
     //-----Instructor Provide Certificate-----//
-    async getCertificateByID(id: any): Promise<any> {
+    async getCertificateByID(id: any, course: any): Promise<any> {
         const data = await this.studentRepo.findOne({ where: { id: id } });
+        const courseName = await this.courseRepo.findOne({
+            where: {
+                coursename: course,
+                instructor: id
+            }
+        })
 
-        if (data) {
+        if (data && courseName) {
             try {
                 return new Promise<string>((resolve, reject) => {
                     const doc = new PDFDocument();
 
-                    doc.image('./Image/Logo.png', { fit: [250, 300], align: 'center' });
+                    doc.image('./data/Logo.png', { fit: [250, 300], align: 'center' });
 
                     doc.fontSize(16).text(`\nWelcome To GraspWay\nCongratulation For Completing the Course.\nUser ID_${id}`, { align: 'center' });
 

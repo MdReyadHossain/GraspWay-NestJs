@@ -60,31 +60,6 @@ export class ManagerService {
             return "Username or Email already been registered!";
     }
 
-    // login to manager
-    async loginManager(manager: ManagerLogin) {
-        const user = await this.managerRepo.findOneBy({
-            manager_name: manager.manager_name
-        });
-
-        try {
-            if (manager.password == user.password && user.status == true)
-                return 1;
-
-            else {
-                const isValid = await bcrypt.compare(manager.password, user.password);
-                if (isValid && user.status == true)
-                    return 1;
-
-                else if (!isValid)
-                    return 0;
-            }
-        }
-
-        catch {
-            return 0;
-        }
-    }
-
     // forget password for manager(ad)
     async forgetPassword(acc: any) {
         let user = await this.managerRepo.findOneBy({

@@ -31,25 +31,6 @@ export class StudentService {
         return this.studentRepo.save(studentaccount);
     }
 
-    //-----student Login-----//
-    async login(student: StudentLogin) {
-        const name = await this.studentRepo.findOneBy({ email: student.email });
-        const isValidPass = await bcrypt.compare(student.password, name.password)
-
-        if (isValidPass) {
-            return student.email + " Login Successful!!"
-        }
-
-        else {
-            if (name == null) {
-                return student.email + " Student Not Found!"
-            }
-            if (!isValidPass) {
-                return "Incorrect Password!"
-            }
-        }
-    }
-
     //-----student Forget Pin-----//
     // async forgetpin(student: ForgetPin){
     //     let user = await this.studentRepo.findOneBy({email: student.email});

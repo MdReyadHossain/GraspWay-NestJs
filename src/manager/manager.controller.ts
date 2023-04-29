@@ -14,22 +14,6 @@ export class ManagerController {
     registration(@Body() manager: ManagerProfile): any {
         return this.managerservice.registration(manager);
     }
-    //login to dashboard(ad)
-    @Post("/login")
-    @UsePipes(new ValidationPipe())
-    async loginManager(
-        @Session() session,
-        @Body() manager: ManagerLogin
-    ) {
-        // return this.maanagerservice.loginManager(manager);
-        if (await this.managerservice.loginManager(manager)) {
-            session.manager_name = manager.manager_name;
-            return { message: "Login Succesful!" };
-        }
-        else {
-            return { message: "Username or Password Invalid!" };
-        }
-    }
 
     //dashboard (ad)
     @Get("/dashboard/")

@@ -57,7 +57,7 @@ import { CatagoryEntity } from './Entities/Catagory/catagory.entity';
                 secure: true,
                 auth: {
                     user: 'blazeaxelspy@gmail.com',
-                    pass: 'tjnadpxurnrlqzff'
+                    pass: 'hhzftgeauhfgajpd'
                 },
             }
         }),
