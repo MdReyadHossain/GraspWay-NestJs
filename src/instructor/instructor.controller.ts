@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Res, Session, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, FileTypeValidator, Get, Header, HttpStatus, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Res, Session, StreamableFile, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe, Headers } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Verify } from "crypto";
 import session from "express-session";
@@ -8,6 +8,8 @@ import { Course, EditInfo, FileUpload, ForgetPin, InstructorEdit, InstructorLogi
 import { InstructorService } from "./instructor.service";
 import { InstructorSessionGuard } from "./session.guard";
 import * as fs from 'fs';
+import { join } from 'path';
+import { createReadStream, statSync } from "fs";
 
 @Controller("/instructor")
 export class InstructorController {
@@ -199,6 +201,66 @@ export class InstructorController {
     //--------------------Course Related Part End--------------------//
 
     //--------------------Others Start--------------------//
+
+    // @Get('/course/:crs/:lecture')
+    // getFile(
+    //     @Res({ passthrough: true }) res,
+    //     @Param('crs') crs: any,
+    //     @Param('lecture') lecture: any
+    // ): StreamableFile {
+    //     try {
+    //         const file = createReadStream(join(process.cwd(), `data/courses/${crs}/${lecture}.mp4`));
+    //         res.set({
+    //             'Content-Type': 'video/mp4',
+    //             'Content-Disposition': 'attachment; filename="video.mp4"',
+    //         });
+    //         return new StreamableFile(file);
+    //     }
+    //     catch (error) {
+    //         console.log(error);
+    //         throw new UnauthorizedException("Could not Streaming");
+    //     }
+    // }
+
+    @Get('/course/:crs/:lecture')
+    @Header('Accept-Ranges', 'bytes')
+    @Header('Content-Type', 'video/mp4')
+    async getStreamVideo(
+        @Param('crs') crs: any,
+        @Param('lecture') lecture: any,
+        @Headers() headers,
+        @Res() res
+    ) {
+        try {
+            const videoPath = `data/courses/${crs}/${lecture}.mp4`;
+            const { size } = statSync(videoPath);
+            const videoRange = headers.range;
+            if (videoRange) {
+                const parts = videoRange.replace(/bytes=/, "").split("-");
+                const start = parseInt(parts[0], 10);
+                const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+                const streamSize = (end - start) + 1;
+                const readStreamfile = createReadStream(videoPath, { start, end, highWaterMark: 60 });
+                const head = {
+                    'Content-Range': `bytes ${start}-${end}/${size}`,
+                    'Content-Length': streamSize,
+                };
+                res.writeHead(HttpStatus.PARTIAL_CONTENT, head); //206
+                readStreamfile.pipe(res);
+            } else {
+                const head = {
+                    'Content-Length': size,
+                };
+                res.writeHead(HttpStatus.OK, head);//200
+                createReadStream(videoPath).pipe(res);
+            }
+        }
+        catch (error) {
+            console.log(error);
+            throw new UnauthorizedException("Could not Streaming or File not found!");
+        }
+    }
+
 
     //-----Query-----//
 

@@ -56,7 +56,7 @@ export class AdminController {
 
     // dashboard: show status of all users
     @Get("/dashboard/")
-    @UseGuards(AdminSessionGuard)
+    // @UseGuards(AdminSessionGuard)
     getdashboard(): any {
         return this.adminservice.getDashboard();
     }
