@@ -45,6 +45,15 @@ export class AdminProfile {
     oldPassword: string;
 }
 
+export class AdminEditProfile {
+    admin_name: string;
+    address: string;
+    phoneNo: string;
+    email: string;
+    joiningYear: string;
+    adminImage: string;
+}
+
 
 export class AdminVarifyPass {
     @IsNotEmpty()

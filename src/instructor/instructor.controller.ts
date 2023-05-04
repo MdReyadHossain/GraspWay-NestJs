@@ -233,21 +233,25 @@ export class InstructorController {
     ) {
         try {
             const videoPath = `data/courses/${crs}/${lecture}.mp4`;
-            const { size } = statSync(videoPath);
+            const size = statSync(videoPath).size;
             const videoRange = headers.range;
             if (videoRange) {
+                console.log("Its Graspway");
                 const parts = videoRange.replace(/bytes=/, "").split("-");
                 const start = parseInt(parts[0], 10);
                 const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
-                const streamSize = (end - start) + 1;
+                const chunkSize = (end - start) + 1;
                 const readStreamfile = createReadStream(videoPath, { start, end, highWaterMark: 60 });
+                // console.log(readStreamfile);
                 const head = {
                     'Content-Range': `bytes ${start}-${end}/${size}`,
-                    'Content-Length': streamSize,
+                    'Content-Length': chunkSize,
                 };
                 res.writeHead(HttpStatus.PARTIAL_CONTENT, head); //206
                 readStreamfile.pipe(res);
+                console.log(res);
             } else {
+                console.log("In Backend")
                 const head = {
                     'Content-Length': size,
                 };

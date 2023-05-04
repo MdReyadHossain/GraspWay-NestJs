@@ -1,12 +1,13 @@
 import { FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Body, Controller, Get, Post, Put, Param, Patch, Delete, Session, UseGuards, Res } from "@nestjs/common/decorators";
 import { AdminSessionGuard } from "./session.guard";
-import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
+import { AdminCatagory, AdminEditProfile, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminService } from "./admin.service";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { AdminEntity } from "./admin.entity";
+import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
 
 @Controller("/admin")
 export class AdminController {
@@ -73,9 +74,9 @@ export class AdminController {
     }
 
     // edit profile with admin parameter
-    @Put("/editProfile/")
-    @UseGuards(AdminSessionGuard)
-    @UsePipes(new ValidationPipe())
+    @Patch("/editProfile/")
+    // @UseGuards(AdminSessionGuard)
+    // @UsePipes(new ValidationPipe())
     @UseInterceptors(FileInterceptor('adminImage', {
         storage: diskStorage({
             destination: './data/admin/profilePictures',
@@ -86,17 +87,19 @@ export class AdminController {
     }))
     editProfile(
         @Session() session,
-        @UploadedFile(new ParseFilePipe({
-            validators: [
-                new MaxFileSizeValidator({ maxSize: 2097152 }),
-                new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
-            ]
-        }
-        )) adminImage: Express.Multer.File,
+        @UploadedFile(
+            // new ParseFilePipe({
+            //     validators: [
+            //         new MaxFileSizeValidator({ maxSize: 2097152 }),
+            //         new FileTypeValidator({ fileType: /(png|jpg|jpeg)$/ }),
+            //     ]
+            // })
+        ) adminImage: Express.Multer.File,
         @Body('id', ParseIntPipe) id: number,
-        @Body() admin: AdminProfile
+        @Body() admin: AdminEditProfile
     ): any {
-        admin.adminImage = adminImage.filename;
+        if (adminImage)
+            admin.adminImage = adminImage.filename;
         return this.adminservice.editProfile(id, admin);
     }
 

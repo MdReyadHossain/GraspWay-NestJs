@@ -3,7 +3,7 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { EntityRepository, getConnection, getRepository, Repository } from "typeorm";
-import { AdminCatagory, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
+import { AdminCatagory, AdminEditProfile, AdminLogin, AdminProfile, AdminVarifyPass } from "./admin.dto";
 import { AdminEntity } from "./admin.entity";
 import { InstructorEntity } from "src/instructor/instructor.entity";
 import { ManagerEntity } from "src/manager/manager.entity";
@@ -119,12 +119,25 @@ export class AdminService {
     }
 
 
-    async editProfile(id: number, admin: AdminProfile) {
-        const salt = await bcrypt.genSalt();
-        admin.password = await bcrypt.hash(admin.password, salt);
+    async editProfile(id: number, admin: AdminEditProfile) {
+        const user = await this.adminRepo.findOne({
+            where: {
+                id: id
+            }
+        });
 
-        this.adminRepo.update(id, admin);
-        return "Admin Profile Updated!";
+        try {
+            if (user) {
+                const editProfile = this.adminRepo.update(id, admin);
+                return { update: editProfile, image: admin.adminImage };
+                // return this.adminRepo.update(id, admin);
+            }
+            else
+                throw new UnauthorizedException("Admin not found");
+        }
+        catch {
+            throw new UnauthorizedException("Admin not found");
+        }
     }
 
 
