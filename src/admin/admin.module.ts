@@ -10,11 +10,12 @@ import { StudentEntity } from "src/student/student.entity";
 import { AdminController } from "./admin.controller";
 import { AdminEntity } from "./admin.entity";
 import { AdminService } from "./admin.service";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
     imports: [TypeOrmModule.forFeature([AdminEntity, ManagerEntity, InstructorEntity, StudentEntity, CourseEntity, CatagoryEntity])],
     controllers: [AdminController],
-    providers: [AdminService, ManagerService]
+    providers: [JwtService, AdminService, ManagerService]
 })
 
 export class AdminModule { }

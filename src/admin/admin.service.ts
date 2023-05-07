@@ -101,7 +101,8 @@ export class AdminService {
         const manager = await this.managerRepo.count({ where: { status: true } });
         const instructor = await this.instructorRepo.count({ where: { status: true } });
         const student = await this.studentRepo.count({});
-        return { admin, manager, instructor, student };
+        const course = await this.courseRepo.count({});
+        return { admin, manager, instructor, student, course };
     }
 
     async getAdminprofile(id: any) {

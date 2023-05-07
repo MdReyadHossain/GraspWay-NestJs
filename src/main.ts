@@ -15,7 +15,7 @@ async function bootstrap() {
     });
     app.use(
         session({
-            secret: 'graspway',
+            secret: process.env.SESSION_SECRET || 'secret',
             resave: true,
             saveUninitialized: false,
             cookie: {

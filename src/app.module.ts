@@ -16,6 +16,7 @@ import { ManagerEntity } from './manager/manager.entity';
 import { StudentEntity } from './student/student.entity';
 import { CourseEntity } from './Entities/Course/course.entity';
 import { CatagoryEntity } from './Entities/Catagory/catagory.entity';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Module({

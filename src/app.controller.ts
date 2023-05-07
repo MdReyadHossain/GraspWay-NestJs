@@ -1,12 +1,15 @@
-import { Body, Controller, Get, Post, Session, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, Session, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AdminLogin } from './admin/admin.dto';
 import { AppLogin } from './app.dto';
 import { AdminEntity } from './admin/admin.entity';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService) { }
+    constructor(
+        private readonly appService: AppService,
+    ) { }
 
     @Get()
     getHello(): string {
@@ -26,11 +29,14 @@ export class AppController {
     @UsePipes(new ValidationPipe())
     async loginAdmin(
         @Session() session,
-        @Body() userdto: AppLogin
+        @Body() userdto: AppLogin,
+        @Res({ passthrough: true }) res: Response
     ) {
         let user = await this.appService.loginUser(userdto);
         try {
             if (user.isLogin) {
+                res.cookie('connect.sid', session.id, { httpOnly: true });
+
                 switch (user.data) {
                     case 'admin':
                         session.Id = user.admin.id;
@@ -69,7 +75,7 @@ export class AppController {
                     default:
                         return { message: "Username or Password Invalid!", success: false };
                 }
-                return { message: "Login Successfull!", success: true, user: user.data, session };
+                return { session, message: "Login Successfull!", success: true, user: user.data, sessionID: session.id };
             }
             else {
                 return { message: "Username or Password Invalid!", success: false };
