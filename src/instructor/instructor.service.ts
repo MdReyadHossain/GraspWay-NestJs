@@ -14,6 +14,7 @@ import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
 import { resolve } from "path";
 import * as PDFDocument from 'pdfkit';
 import * as fs from 'fs';
+import moment from "moment";
 
 @Injectable()
 export class InstructorService {
@@ -37,11 +38,13 @@ export class InstructorService {
 
     //-----Instructor Registration-----//
     async registration(instructor: InstructorReg): Promise<any> {
+        const today = new Date();
         const instructoraccount = new InstructorEntity();
         instructoraccount.instructor_name = instructor.instructor_name;
         instructoraccount.phonenumber = instructor.phonenumber;
         instructoraccount.email = instructor.email;
         instructoraccount.dob = instructor.dob;
+        instructoraccount.jointime = today;
         instructoraccount.status = false;
 
         const passhash = await bcrypt.genSalt();

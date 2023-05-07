@@ -97,12 +97,26 @@ export class AdminService {
     // ------------------- Admin Related service [Start] ---------------------//    
 
     async getDashboard(): Promise<any> {
+        const instDate = await this.instructorRepo.find({
+            select: {
+                jointime: true
+            },
+            where: {
+                status: true
+            }
+        });
+
+        let instructorDate = [];
+        instDate.forEach(ins => {
+            let date = new Date(ins.jointime);
+            instructorDate.push({ month: date.getMonth() + 1, year: date.getFullYear() })
+        });
         const admin = await this.adminRepo.count({});
         const manager = await this.managerRepo.count({ where: { status: true } });
         const instructor = await this.instructorRepo.count({ where: { status: true } });
         const student = await this.studentRepo.count({});
         const course = await this.courseRepo.count({});
-        return { admin, manager, instructor, student, course };
+        return { admin, manager, instructor, student, course, instructorDate };
     }
 
     async getAdminprofile(id: any) {
