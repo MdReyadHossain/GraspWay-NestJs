@@ -24,6 +24,9 @@ export class StudentEntity {
     @Column()
     status: boolean;
 
+    @Column({ nullable: true })
+    regitration: Date;
+
     @OneToMany(() => CourseStudentEntity, (coursestudents) => coursestudents.course)
     coursestudents: CourseStudentEntity[];
 }

@@ -25,7 +25,7 @@ export class InstructorEntity {
     status: boolean;
 
     @Column()
-    jointime: Date;
+    joined_at: Date;
 
     @Column({ nullable: true })
     total_income: number;

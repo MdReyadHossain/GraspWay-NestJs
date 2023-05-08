@@ -10,6 +10,7 @@ import { ManagerEntity } from "src/manager/manager.entity";
 import { CourseEntity } from "src/Entities/Course/course.entity";
 import { CatagoryEntity } from "src/Entities/Catagory/catagory.entity";
 import { StudentEntity } from "src/student/student.entity";
+import { CourseStudentEntity } from "src/Entities/CourseStudent/coursestudent.entity";
 
 @Injectable()
 export class AdminService {
@@ -22,6 +23,7 @@ export class AdminService {
         @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
         @InjectRepository(StudentEntity) private studentRepo: Repository<StudentEntity>,
         @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,
+        @InjectRepository(CourseStudentEntity) private courseStudentRepo: Repository<CourseStudentEntity>,
         @InjectRepository(CatagoryEntity) private catagoryRepo: Repository<CatagoryEntity>,
         private readonly mailerService: MailerService
     ) { }
@@ -97,26 +99,54 @@ export class AdminService {
     // ------------------- Admin Related service [Start] ---------------------//    
 
     async getDashboard(): Promise<any> {
-        const instDate = await this.instructorRepo.find({
+        const studentReg = await this.studentRepo.find({
             select: {
-                jointime: true
+                regitration: true
             },
             where: {
                 status: true
             }
         });
-
-        let instructorDate = [];
-        instDate.forEach(ins => {
-            let date = new Date(ins.jointime);
-            instructorDate.push({ month: date.getMonth() + 1, year: date.getFullYear() })
+        let studentDate = [];
+        studentReg.forEach(st => {
+            let stdate = new Date(st.regitration);
+            studentDate.push({ month: stdate.getMonth(), year: stdate.getFullYear() })
         });
+
+        const instructorReg = await this.instructorRepo.find({
+            select: {
+                joined_at: true
+            },
+            where: {
+                status: true
+            }
+        });
+        let instructorDate = [];
+        instructorReg.forEach(ins => {
+            let instdate = new Date(ins.joined_at);
+            studentDate.push({ month: instdate.getMonth(), year: instdate.getFullYear() })
+        });
+
+        const coursePurchase = await this.courseStudentRepo.find({
+            select: {
+                purchased_at: true
+            },
+            where: {
+                status: true
+            }
+        });
+        let courseDate = [];
+        coursePurchase.forEach(crs => {
+            let crsdate = new Date(crs.purchased_at);
+            courseDate.push({ month: crsdate.getMonth(), year: crsdate.getFullYear() })
+        });
+
         const admin = await this.adminRepo.count({});
         const manager = await this.managerRepo.count({ where: { status: true } });
         const instructor = await this.instructorRepo.count({ where: { status: true } });
         const student = await this.studentRepo.count({});
         const course = await this.courseRepo.count({});
-        return { admin, manager, instructor, student, course, instructorDate };
+        return { admin, manager, instructor, student, course, instructorDate, studentDate, courseDate };
     }
 
     async getAdminprofile(id: any) {

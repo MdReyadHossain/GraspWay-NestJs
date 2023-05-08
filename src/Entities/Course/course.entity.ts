@@ -26,6 +26,9 @@ export class CourseEntity {
     @OneToMany(() => CourseContentEntity, (content) => content.course)
     content: CourseContentEntity[];
 
+    @Column({ nullable: true })
+    created_at: Date;
+
     @Column()
     status: boolean;
 }

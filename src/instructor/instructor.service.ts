@@ -15,12 +15,13 @@ import { resolve } from "path";
 import * as PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 import moment from "moment";
+import { AdminEntity } from "src/admin/admin.entity";
 
 @Injectable()
 export class InstructorService {
-    adminRepo: any;
 
     constructor(
+        @InjectRepository(AdminEntity) private adminRepo: Repository<AdminEntity>,
         @InjectRepository(InstructorEntity) private instructorRepo: Repository<InstructorEntity>,
         @InjectRepository(CourseContentEntity) private contentRepo: Repository<CourseContentEntity>,
         @InjectRepository(CourseEntity) private courseRepo: Repository<CourseEntity>,
@@ -44,7 +45,7 @@ export class InstructorService {
         instructoraccount.phonenumber = instructor.phonenumber;
         instructoraccount.email = instructor.email;
         instructoraccount.dob = instructor.dob;
-        instructoraccount.jointime = today;
+        instructoraccount.joined_at = today;
         instructoraccount.status = false;
 
         const passhash = await bcrypt.genSalt();
@@ -289,7 +290,8 @@ export class InstructorService {
 
     //-----Instructor Insert Course-----//
     async insertCourse(instructordto: Course): Promise<any> {
-        const course = new CourseEntity()
+        const today = new Date();
+        const course = new CourseEntity();
         course.coursename = instructordto.coursename;
 
         //course.catagory.id = instructordto.catagoryID;
@@ -313,6 +315,7 @@ export class InstructorService {
 
         course.instructor = instructor;
         course.catagory = catagory;
+        course.created_at = today;
         course.status = false;
 
         const isValid = await this.courseRepo.findOne({

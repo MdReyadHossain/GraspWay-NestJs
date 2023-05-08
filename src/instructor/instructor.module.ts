@@ -9,14 +9,20 @@ import { StudentEntity } from "src/student/student.entity";
 import { InstructorController } from "./instructor.controller";
 import { InstructorEntity } from "./instructor.entity";
 import { InstructorService } from "./instructor.service";
+import { AdminEntity } from "src/admin/admin.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([InstructorEntity,
-        CourseEntity,
-        CourseContentEntity,
-        StudentEntity,
-        CourseStudentEntity,
-        CatagoryEntity])],
+    imports: [TypeOrmModule.forFeature(
+        [
+            AdminEntity,
+            InstructorEntity,
+            CourseEntity,
+            CourseContentEntity,
+            StudentEntity,
+            CourseStudentEntity,
+            CatagoryEntity
+        ]
+    )],
 
     controllers: [InstructorController],
     providers: [InstructorService],

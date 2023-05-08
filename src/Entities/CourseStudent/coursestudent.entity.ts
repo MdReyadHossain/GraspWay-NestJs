@@ -19,4 +19,7 @@ export class CourseStudentEntity {
     @ManyToOne(() => StudentEntity, (student) => student.coursestudents, { onDelete: 'CASCADE' })
     @JoinColumn()
     student: StudentEntity;
+
+    @Column({ nullable: true })
+    purchased_at: Date;
 }

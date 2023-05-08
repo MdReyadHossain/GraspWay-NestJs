@@ -42,7 +42,7 @@ export class InstructorController {
 
     //-----Instructor Dashboard-----//
     @Get("/dashboard")
-    @UseGuards(InstructorSessionGuard)
+    // @UseGuards(InstructorSessionGuard)
     getInstructor(): any {
         return this.instructorservice.getDashboard();
     }

@@ -17,18 +17,35 @@ export class StudentService {
 
     //-----Instructor Registration-----//
     async registration(student: Studentinfo): Promise<any> {
+        const today = new Date();
         const studentaccount = new StudentEntity();
         studentaccount.student_name = student.student_name;
         studentaccount.password = student.password;
         studentaccount.phonenumber = student.phonenumber;
         studentaccount.email = student.email;
         studentaccount.dob = student.dob;
+        studentaccount.regitration = today;
         studentaccount.status = true;
 
         const passhash = await bcrypt.genSalt();
         studentaccount.password = await bcrypt.hash(student.password, passhash);
 
-        return this.studentRepo.save(studentaccount);
+        const isValidName = await this.studentRepo.findOneBy({ student_name: student.student_name });
+        const isValidEmail = await this.studentRepo.findOneBy({ email: student.email });
+
+        if (!isValidName && !isValidEmail) {
+            await this.studentRepo.save(studentaccount);
+            return "Student Name : " + studentaccount.student_name + " Successfully Added!!"
+        }
+
+        else {
+            if (isValidName) {
+                return studentaccount.student_name + " Student Name Already Registered!";
+            }
+            if (isValidEmail) {
+                return studentaccount.email + " Email Already Registered!"
+            }
+        }
     }
 
     //-----student Forget Pin-----//
