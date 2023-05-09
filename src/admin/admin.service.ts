@@ -124,7 +124,7 @@ export class AdminService {
         let instructorDate = [];
         instructorReg.forEach(ins => {
             let instdate = new Date(ins.joined_at);
-            studentDate.push({ month: instdate.getMonth(), year: instdate.getFullYear() })
+            instructorDate.push({ month: instdate.getMonth(), year: instdate.getFullYear() })
         });
 
         const coursePurchase = await this.courseStudentRepo.find({
