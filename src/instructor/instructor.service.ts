@@ -120,9 +120,7 @@ export class InstructorService {
     async getDashboard(): Promise<any> {
         const instructorcount = await this.instructorRepo.count({});
         const studentcount = await this.studentRepo.count({})
-        return `Welcome To GraspWay\n\nInstructor Dashboard:
-        Instructor: [${instructorcount}]
-        Student: [${studentcount}]`;
+        return { instructorcount, studentcount };
     }
 
     async getProfile(id: any) {
@@ -167,7 +165,6 @@ export class InstructorService {
         else {
             return `Instructor Information Didn't Updated.`;
         }
-
     }
 
     //-----Instructor Password Reset-----//

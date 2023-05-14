@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Res, Session, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, Session, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AdminLogin } from './admin/admin.dto';
 import { AppLogin } from './app.dto';
 import { AdminEntity } from './admin/admin.entity';
 import { Response } from 'express';
+import { AdminSessionGuard } from './admin/session.guard';
 
 @Controller()
 export class AppController {
@@ -86,3 +87,4 @@ export class AppController {
         }
     }
 }
+

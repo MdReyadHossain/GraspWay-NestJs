@@ -27,6 +27,9 @@ export class AdminEntity {
     @Column()
     adminImage: string;
 
+    @Column({ nullable: true })
+    fund: number;
+
     @OneToMany(() => ManagerEntity, (manager) => manager.admin)
     manager: ManagerEntity[];
 }

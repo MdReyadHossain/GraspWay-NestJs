@@ -410,31 +410,31 @@ export class AdminService {
 
     // ------------------- Website Related service [Start] ---------------------//
 
-    getCatagory(catagoryOrder: any): any {
+    getCategory(catagoryOrder: any): any {
         if (catagoryOrder == "" || catagoryOrder == "ASC")
             return this.catagoryRepo.find({
                 order: {
-                    Catagoryname: "ASC"
+                    id: "ASC"
                 }
             });
 
         else if (catagoryOrder === "DESC") {
             return this.catagoryRepo.find({
                 order: {
-                    Catagoryname: "DESC"
+                    id: "DESC"
                 }
             });
         }
         return this.catagoryRepo.find();
     }
 
-    addCatagory(cat: AdminCatagory): any {
+    addCategory(cat: AdminCatagory): any {
         const catag = new CatagoryEntity()
         catag.Catagoryname = cat.name;
         return this.catagoryRepo.save(catag);
     }
 
-    async customizeCatagory(id: number, cat: AdminCatagory): Promise<any> {
+    async customizeCategory(id: number, cat: AdminCatagory): Promise<any> {
         const user = await this.catagoryRepo.findOne({
             where: { id: id }
         })
@@ -445,7 +445,35 @@ export class AdminService {
             throw new UnauthorizedException("Catagory not found");
     }
 
-    async deleteCatagory(id: number): Promise<any> {
+    async categoryCourses(id: number): Promise<any> {
+        const category = await this.catagoryRepo.findOne({
+            where: { id: id }
+        })
+
+        const course = await this.courseRepo.count({
+            where: { catagory: category }
+        })
+
+        if (course)
+            return course;
+
+        else
+            throw new UnauthorizedException("Catagory not found");
+    }
+
+    async findCategory(id: number): Promise<any> {
+        const user = await this.catagoryRepo.findOne({
+            where: { id: id }
+        })
+
+        if (user)
+            return user;
+
+        else
+            throw new UnauthorizedException("Catagory not found");
+    }
+
+    async deleteCategory(id: number): Promise<any> {
         const user = await this.catagoryRepo.findOne({
             where: { id: id }
         })

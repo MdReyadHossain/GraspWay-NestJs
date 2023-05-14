@@ -127,7 +127,7 @@ export class AdminController {
     }
 
     @Get('/logout')
-    @UseGuards(AdminSessionGuard)
+    // @UseGuards(AdminSessionGuard)
     logout(@Session() session) {
         if (session.destroy())
             return { message: "Logged out successful" };
@@ -265,36 +265,55 @@ export class AdminController {
 
     // ------------------- Website Related Routes [Start] ---------------------//
 
-    @Get("/catagory?")
-    @UsePipes(new ValidationPipe())
-    getCatagory(
+    @Get("/category?")
+    // @UsePipes(new ValidationPipe())
+    getCategory(
         @Query("order") ordr: any
     ): any {
-        return this.adminservice.getCatagory(ordr);
+        return this.adminservice.getCategory(ordr);
     }
 
-    @Post('/addCatagory')
+    @Post('/addCategory')
     @UsePipes(new ValidationPipe())
     addCatagory(
         @Body() cat: AdminCatagory
     ): any {
-        return this.adminservice.addCatagory(cat);
+        return this.adminservice.addCategory(cat);
     }
 
-    @Put("/customizeCatagory/")
-    @UseGuards(AdminSessionGuard)
+    @Get("/categoryCourses/:id")
+    // @UseGuards(AdminSessionGuard)
     @UsePipes(new ValidationPipe())
-    customizeCatagory(
+    categoryCourses(
+        @Param('id', ParseIntPipe) id: number
+    ): any {
+        return this.adminservice.categoryCourses(id);
+    }
+
+
+    @Get("/findCategory/:id")
+    // @UseGuards(AdminSessionGuard)
+    @UsePipes(new ValidationPipe())
+    findCategory(
+        @Param('id', ParseIntPipe) id: number
+    ): any {
+        return this.adminservice.findCategory(id);
+    }
+
+    @Put("/customizeCategory/")
+    // @UseGuards(AdminSessionGuard)
+    @UsePipes(new ValidationPipe())
+    customizeCategory(
         @Body('id', ParseIntPipe) id: number,
         @Body() cat: AdminCatagory
     ): any {
-        return this.adminservice.customizeCatagory(id, cat);
+        return this.adminservice.customizeCategory(id, cat);
     }
 
-    @Delete("/deleteCatagory/:id")
-    @UseGuards(AdminSessionGuard)
-    deleteCatagory(@Param('id', ParseIntPipe) id: any): any {
-        return this.adminservice.deleteCatagory(id);
+    @Delete("/deleteCategory/:id")
+    // @UseGuards(AdminSessionGuard)
+    deleteCategory(@Param('id', ParseIntPipe) id: any): any {
+        return this.adminservice.deleteCategory(id);
     }
 
     // ------------------- Website Related Routes [End] ---------------------//
