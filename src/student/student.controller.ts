@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, Session, UnauthorizedException, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Course, Studentinfo, StudentLogin } from "./student.dto";
 import { StudentService } from "./student.service";
 
@@ -76,5 +76,13 @@ export class StudentController {
         return this.studentservice.deleteStudentByID(id);
     }
 
+    @Get('/logout')
+    // @UseGuards(AdminSessionGuard)
+    logout(@Session() session) {
+        if (session.destroy())
+            return { message: "Logged out successful" };
 
+        else
+            throw new UnauthorizedException("invalid actions");
+    }
 }

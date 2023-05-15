@@ -119,7 +119,7 @@ export class InstructorService {
     //-----Instructor Dashboard-----//
     async getDashboard(): Promise<any> {
         const instructorcount = await this.instructorRepo.count({});
-        const studentcount = await this.studentRepo.count({})
+        const studentcount = await this.studentRepo.count({});
         return { instructorcount, studentcount };
     }
 
